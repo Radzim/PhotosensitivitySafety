@@ -65,7 +65,7 @@
       frame.data[i * 4 + 2]  = frame.data[i * 4 + 2] - frame2.data[i * 4 + 2];
     }
     ctx_tmp2.drawImage(video, 0, 0, 300 , 300*video.videoHeight/video.videoWidth);
-//    ctx1.putImageData(frame, 0, 0);
+    ctx1.putImageData(frame, 0, 0);
     setTimeout(computeFrame, 0);
   }
 
