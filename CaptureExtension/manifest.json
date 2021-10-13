@@ -2,7 +2,7 @@
   "name": "Desktop Capture",
   "description":
     "Allows you to capture your desktop for use in video applications",
-  "version": "1.0",
+  "version": "1.1",
   "manifest_version": 2,
   "background": {
     "scripts": ["extension.js"],

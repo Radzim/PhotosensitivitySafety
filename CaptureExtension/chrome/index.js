@@ -1,5 +1,5 @@
 (() => {
-  const EXTENSION_ID = 'biedcckmiaepfaciienbodgiiklnpflb';
+  const EXTENSION_ID = 'gbdknfbioonlhgmfgfbjfienkjdbkfng'
 
   const video = document.getElementById('screen-view');
   const getScreen = document.getElementById('get-screen');
