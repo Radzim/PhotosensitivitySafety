@@ -1,4 +1,6 @@
-chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessageExternal.addListener(callback);
+
+function callback (message, sender, sendResponse) {
   const sources = message.sources;
   const tab = sender.tab;
   chrome.desktopCapture.chooseDesktopMedia(sources, tab, (streamId) => {
@@ -15,4 +17,4 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
     }
   });
   return true;
-});
+}
