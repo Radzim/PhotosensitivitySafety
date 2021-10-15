@@ -6,7 +6,7 @@ import pafy
 import plot
 
 # SETTINGS
-videoPick = 1
+videoPick = 0
 displayAnalysis = True
 
 # INITIALISE
