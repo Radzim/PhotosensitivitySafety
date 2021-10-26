@@ -4,8 +4,8 @@ import pafy
 import plot
 
 # SETTINGS
-videoPick = 1
-displayAnalysis = True
+videoPick = 5
+displayAnalysis = False
 
 # INITIALISE
 luminancePlot = plot.Plotter(500, 300)
@@ -22,11 +22,12 @@ frameCount = 0
 frameRate = 24
 
 # THRESHOLDS
-globalMinimumThreshold = 1 / 9 * 0.25  # 2.8%
+globalMaximumThreshold = 0.25
+globalMinimumThreshold = 1 / 9 * globalMaximumThreshold  # 2.8%
 regions = (15, 9)
 regionalThreshold = globalMinimumThreshold / (
             (regions[0] / 3 + 1) * (regions[1] / 3 + 1) / (regions[0] / 3 * 3 * regions[1] / 3 * 3))
-print(globalMinimumThreshold, regionalThreshold, 1/4)
+print(globalMinimumThreshold, regionalThreshold, globalMaximumThreshold)
 
 # VIDEO LIST
 videos = [
@@ -35,7 +36,8 @@ videos = [
     ("https://www.youtube.com/watch?v=FkhfLNfWIHA", 'pafy'),  # flashing images
     ("https://www.youtube.com/watch?v=XqZsoesa55w", 'pafy'),  # baby shark
     ("https://www.youtube.com/watch?v=0EqSXDwTq6U", 'pafy'),  # charlie bit my finger
-    ('C:/Users/radzi/Videos/uTorrent/ted.lasso.s02e01.1080p.web.h264-glhf[eztv.re].mkv', 'local')  # ted lasso
+    ('C:/Users/radzi/Videos/uTorrent/Brooklyn.Nine-Nine.S08.COMPLETE.720p.AMZN.WEBRip.x264-GalaxyTV[TGx]/Brooklyn.Nine-Nine.S08E01.720p.AMZN.WEBRip.x264-GalaxyTV.mkv', 'local'),  # brooklyn 99
+    ('C:/Users/radzi/OneDrive/Desktop/Project/Media/Pokemon.mp4', 'local')  # pokemon local
 ]
 video = videos[videoPick]
 
@@ -68,9 +70,31 @@ while True:
         limitRelativeLuminanceLighter = np.array(np.multiply(np.where(deltaRelativeLuminance >= 0.1, 1, 0), np.where(np.minimum(relativeLuminance, previousRelativeLuminance) <= 0.8, 1, 0)), dtype=np.uint8)
         limitRelativeLuminanceDarker = np.array(np.multiply(np.where(deltaRelativeLuminance <= -0.1, 1, 0), np.where(np.minimum(relativeLuminance, previousRelativeLuminance) <= 0.8, 1, 0)), dtype=np.uint8)
 
-        lastLighter = np.maximum(np.maximum(lastLighter-1/frameRate, 0), limitRelativeLuminanceLighter)
-        lastDarker = np.maximum(np.maximum(lastDarker-1/frameRate, 0), limitRelativeLuminanceDarker)
-        print(np.average(lastDarker))
+        lastLighter = np.maximum(np.maximum(lastLighter-1, 0), limitRelativeLuminanceLighter*frameRate)
+        lastDarker = np.maximum(np.maximum(lastDarker-1, 0), limitRelativeLuminanceDarker*frameRate)
+
+        lighterDarkerFlash = np.array(lastLighter * limitRelativeLuminanceDarker, dtype=int)
+        darkerLighterFlash = np.array(lastDarker * limitRelativeLuminanceLighter, dtype=int)
+
+        # FLASH CALCULATOR
+        darkerLighterFlashCounts = np.bincount(np.ravel(darkerLighterFlash))
+        darkerLighterFlashCountsNormalised = (darkerLighterFlashCounts/sum(darkerLighterFlashCounts))[1:]
+
+        lighterDarkerFlashCounts = np.bincount(np.ravel(lighterDarkerFlash))
+        lighterDarkerFlashCountsNormalised = (lighterDarkerFlashCounts/sum(lighterDarkerFlashCounts))[1:]
+
+        for frameOffset in range(len(darkerLighterFlashCountsNormalised)):
+            if darkerLighterFlashCountsNormalised[frameOffset] >= globalMaximumThreshold:
+                print("DL FLASH @ ", frameCount-frameRate+frameOffset, "-", frameCount)
+            elif darkerLighterFlashCountsNormalised[frameOffset] >= globalMinimumThreshold:
+                print("DL potential flash @ ", frameCount-frameRate+frameOffset, "-", frameCount)
+
+        for frameOffset in range(len(lighterDarkerFlashCountsNormalised)):
+            if lighterDarkerFlashCountsNormalised[frameOffset] >= globalMaximumThreshold:
+                print("LD FLASH @ ", frameCount-frameRate+frameOffset, "-", frameCount)
+            elif lighterDarkerFlashCountsNormalised[frameOffset] >= globalMinimumThreshold:
+                print("LD potential flash @ ", frameCount-frameRate+frameOffset, "-", frameCount)
+
         # FINDING REGIONS
         # find regions of flashes!
 
@@ -92,22 +116,30 @@ while True:
         # regionalLimitRelativeLuminanceLighter = cv2.resize(limitRelativeLuminanceLighter, regions, interpolation=cv2.INTER_LINEAR)
         # regionalLimitRelativeLuminanceDarker = cv2.resize(limitRelativeLuminanceDarker, regions, interpolation=cv2.INTER_LINEAR)
 
+        #cv2.imshow('Original', X8bit)
+        #cv2.waitKey(1)
+
         # SHOW MONITORS
         if displayAnalysis:
 
             # SHOW VIDEOS
 
-            cv2.imshow('Original', X8bit)
+            # cv2.imshow('Original', X8bit)
 
             limitRelativeLuminanceLighter8bit = np.array(np.multiply(limitRelativeLuminanceLighter, 255), dtype=np.uint8)
             cv2.imshow('Lighter Relative Luminance Delta Breach', limitRelativeLuminanceLighter8bit)
             limitRelativeLuminanceDarker8bit = np.array(np.multiply(limitRelativeLuminanceDarker, 255), dtype=np.uint8)
             cv2.imshow('Darker Relative Luminance Delta Breach', limitRelativeLuminanceDarker8bit)
 
-            lastLighter8bit = np.array(np.multiply(lastLighter, 255), dtype=np.uint8)
+            lastLighter8bit = np.array(np.multiply(lastLighter, 10), dtype=np.uint8)
             cv2.imshow('LastLighter', lastLighter8bit)
-            lastDarker8bit = np.array(np.multiply(lastDarker, 255), dtype=np.uint8)
+            lastDarker8bit = np.array(np.multiply(lastDarker, 10), dtype=np.uint8)
             cv2.imshow('LastDarker', lastDarker8bit)
+
+            lighterDarkerFlash8bit = np.array(np.multiply(lighterDarkerFlash, 10), dtype=np.uint8)
+            cv2.imshow('Lighter-Darker Flash', lighterDarkerFlash8bit)
+            darkerLighterFlash8bit = np.array(np.multiply(darkerLighterFlash, 10), dtype=np.uint8)
+            cv2.imshow('Darker-Lighter Flash', darkerLighterFlash8bit)
 
             # regionalLimitRelativeLuminance8bitLighter = np.array(np.multiply(regionalLimitRelativeLuminanceLighter, 255), dtype=np.uint8)
             # cv2.imshow('Regional Lighter Relative Luminance Delta Breach', cv2.resize(regionalLimitRelativeLuminance8bitLighter, (200, 150), interpolation=cv2.INTER_NEAREST))
