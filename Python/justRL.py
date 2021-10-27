@@ -4,7 +4,7 @@ import pafy
 import plot
 
 # SETTINGS
-videoPick = 5
+videoPick = 6
 displayAnalysis = False
 
 # INITIALISE
@@ -124,7 +124,7 @@ while True:
 
             # SHOW VIDEOS
 
-            # cv2.imshow('Original', X8bit)
+            cv2.imshow('Original', X8bit)
 
             limitRelativeLuminanceLighter8bit = np.array(np.multiply(limitRelativeLuminanceLighter, 255), dtype=np.uint8)
             cv2.imshow('Lighter Relative Luminance Delta Breach', limitRelativeLuminanceLighter8bit)
