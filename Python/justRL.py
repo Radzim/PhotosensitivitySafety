@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import pafy
 import plot
+from functions import *
 
 # SETTINGS
 videoPick = 6
@@ -18,16 +19,17 @@ previousRedMajority = 0.0
 previousRedSaturation = 0.0
 lastLighter = 0.0
 lastDarker = 0.0
+
 frameCount = 0
 frameRate = 24
 
 # THRESHOLDS
-globalMaximumThreshold = 0.25
-globalMinimumThreshold = 1 / 9 * globalMaximumThreshold  # 2.8%
+globalMaxThreshold = 0.25
+globalMinThreshold = 1 / 9 * globalMaxThreshold  # 2.8%
 regions = (15, 9)
-regionalThreshold = globalMinimumThreshold / (
+regionalThreshold = globalMinThreshold / (
             (regions[0] / 3 + 1) * (regions[1] / 3 + 1) / (regions[0] / 3 * 3 * regions[1] / 3 * 3))
-print(globalMinimumThreshold, regionalThreshold, globalMaximumThreshold)
+print(globalMinThreshold, regionalThreshold, globalMaxThreshold)
 
 # VIDEO LIST
 videos = [
@@ -59,41 +61,23 @@ while True:
 
         X8bit = cv2.resize(frame, (300, 225))
 
-        XsRGB = np.divide(np.ndarray.copy(X8bit).astype(float), 255)
+        relativeLuminance = calculate_relative_luminance(X8bit)
 
-        X = np.maximum(np.divide(XsRGB, 12.92), np.power(np.divide(XsRGB+0.055, 1.055), 2.4))
+        (limitRelativeLuminanceLighter, limitRelativeLuminanceDarker) = relative_luminance_limits(relativeLuminance, previousRelativeLuminance)
 
-        relativeLuminance = np.dot(X[..., :3], [0.0722, 0.7152, 0.2126])
-
-        deltaRelativeLuminance = relativeLuminance-previousRelativeLuminance
-
-        limitRelativeLuminanceLighter = np.array(np.multiply(np.where(deltaRelativeLuminance >= 0.1, 1, 0), np.where(np.minimum(relativeLuminance, previousRelativeLuminance) <= 0.8, 1, 0)), dtype=np.uint8)
-        limitRelativeLuminanceDarker = np.array(np.multiply(np.where(deltaRelativeLuminance <= -0.1, 1, 0), np.where(np.minimum(relativeLuminance, previousRelativeLuminance) <= 0.8, 1, 0)), dtype=np.uint8)
-
-        lastLighter = np.maximum(np.maximum(lastLighter-1, 0), limitRelativeLuminanceLighter*frameRate)
-        lastDarker = np.maximum(np.maximum(lastDarker-1, 0), limitRelativeLuminanceDarker*frameRate)
+        lastLighter = update_last_flash(lastLighter, limitRelativeLuminanceLighter, frameRate)
+        lastDarker = update_last_flash(lastDarker, limitRelativeLuminanceDarker, frameRate)
 
         lighterDarkerFlash = np.array(lastLighter * limitRelativeLuminanceDarker, dtype=int)
         darkerLighterFlash = np.array(lastDarker * limitRelativeLuminanceLighter, dtype=int)
 
         # FLASH CALCULATOR
-        darkerLighterFlashCounts = np.bincount(np.ravel(darkerLighterFlash))
-        darkerLighterFlashCountsNormalised = (darkerLighterFlashCounts/sum(darkerLighterFlashCounts))[1:]
+        darkerLighterFlashCounts = flash_frames_separator(darkerLighterFlash)
+        lighterDarkerFlashCounts = flash_frames_separator(lighterDarkerFlash)
 
-        lighterDarkerFlashCounts = np.bincount(np.ravel(lighterDarkerFlash))
-        lighterDarkerFlashCountsNormalised = (lighterDarkerFlashCounts/sum(lighterDarkerFlashCounts))[1:]
+        flash_detect_printout(darkerLighterFlashCounts, frameCount, frameRate, globalMinThreshold, globalMaxThreshold)
+        flash_detect_printout(lighterDarkerFlashCounts, frameCount, frameRate, globalMinThreshold, globalMaxThreshold)
 
-        for frameOffset in range(len(darkerLighterFlashCountsNormalised)):
-            if darkerLighterFlashCountsNormalised[frameOffset] >= globalMaximumThreshold:
-                print("DL FLASH @ ", frameCount-frameRate+frameOffset, "-", frameCount)
-            elif darkerLighterFlashCountsNormalised[frameOffset] >= globalMinimumThreshold:
-                print("DL potential flash @ ", frameCount-frameRate+frameOffset, "-", frameCount)
-
-        for frameOffset in range(len(lighterDarkerFlashCountsNormalised)):
-            if lighterDarkerFlashCountsNormalised[frameOffset] >= globalMaximumThreshold:
-                print("LD FLASH @ ", frameCount-frameRate+frameOffset, "-", frameCount)
-            elif lighterDarkerFlashCountsNormalised[frameOffset] >= globalMinimumThreshold:
-                print("LD potential flash @ ", frameCount-frameRate+frameOffset, "-", frameCount)
 
         # FINDING REGIONS
         # find regions of flashes!
