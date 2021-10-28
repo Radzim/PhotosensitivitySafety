@@ -1,11 +1,10 @@
 import cv2
-import numpy as np
 import pafy
 import plot
 from functions import *
 
 # SETTINGS
-videoPick = 6
+videoPick = 5
 displayAnalysis = False
 
 # INITIALISE
@@ -17,19 +16,15 @@ redLimitPlot = plot.Plotter(500, 300)
 previousRelativeLuminance = 0.0
 previousRedMajority = 0.0
 previousRedSaturation = 0.0
-lastLighter = 0.0
-lastDarker = 0.0
+lastChanges = (0.0, 0.0)
 
 frameCount = 0
 frameRate = 24
 
 # THRESHOLDS
-globalMaxThreshold = 0.25
+globalMaxThreshold = 0.25  # 25%
 globalMinThreshold = 1 / 9 * globalMaxThreshold  # 2.8%
-regions = (15, 9)
-regionalThreshold = globalMinThreshold / (
-            (regions[0] / 3 + 1) * (regions[1] / 3 + 1) / (regions[0] / 3 * 3 * regions[1] / 3 * 3))
-print(globalMinThreshold, regionalThreshold, globalMaxThreshold)
+thresholds = globalMinThreshold, globalMaxThreshold
 
 # VIDEO LIST
 videos = [
@@ -38,7 +33,6 @@ videos = [
     ("https://www.youtube.com/watch?v=FkhfLNfWIHA", 'pafy'),  # flashing images
     ("https://www.youtube.com/watch?v=XqZsoesa55w", 'pafy'),  # baby shark
     ("https://www.youtube.com/watch?v=0EqSXDwTq6U", 'pafy'),  # charlie bit my finger
-    ('C:/Users/radzi/Videos/uTorrent/Brooklyn.Nine-Nine.S08.COMPLETE.720p.AMZN.WEBRip.x264-GalaxyTV[TGx]/Brooklyn.Nine-Nine.S08E01.720p.AMZN.WEBRip.x264-GalaxyTV.mkv', 'local'),  # brooklyn 99
     ('C:/Users/radzi/OneDrive/Desktop/Project/Media/Pokemon.mp4', 'local')  # pokemon local
 ]
 video = videos[videoPick]
@@ -62,46 +56,11 @@ while True:
         X8bit = cv2.resize(frame, (300, 225))
 
         relativeLuminance = calculate_relative_luminance(X8bit)
-
-        (limitRelativeLuminanceLighter, limitRelativeLuminanceDarker) = relative_luminance_limits(relativeLuminance, previousRelativeLuminance)
-
-        lastLighter = update_last_flash(lastLighter, limitRelativeLuminanceLighter, frameRate)
-        lastDarker = update_last_flash(lastDarker, limitRelativeLuminanceDarker, frameRate)
-
-        lighterDarkerFlash = np.array(lastLighter * limitRelativeLuminanceDarker, dtype=int)
-        darkerLighterFlash = np.array(lastDarker * limitRelativeLuminanceLighter, dtype=int)
-
-        # FLASH CALCULATOR
-        darkerLighterFlashCounts = flash_frames_separator(darkerLighterFlash)
-        lighterDarkerFlashCounts = flash_frames_separator(lighterDarkerFlash)
-
-        flash_detect_printout(darkerLighterFlashCounts, frameCount, frameRate, globalMinThreshold, globalMaxThreshold)
-        flash_detect_printout(lighterDarkerFlashCounts, frameCount, frameRate, globalMinThreshold, globalMaxThreshold)
-
-
-        # FINDING REGIONS
-        # find regions of flashes!
-
-        # Track last L and last D in matrix (frame count, frame rate maximum)
-        # If L or D over threshold:
-        #    Consider all 24 flashes:
-        #       for each check if over 1/36 threshold
-        #           if so, check rectangles (or assume for browser)!
-
-
-        # some attempts to check rectangles
-        # im = limitRelativeLuminanceLighter
-        # M = im.shape[0] // regions[0]
-        # N = im.shape[1] // regions[1]
-
-        # tiles = [im[x:x + M, y:y + N] for x in range(0, im.shape[0], M) for y in range(0, im.shape[1], N)]
-        # averages = [np.average(x) for x in tiles]
-
-        # regionalLimitRelativeLuminanceLighter = cv2.resize(limitRelativeLuminanceLighter, regions, interpolation=cv2.INTER_LINEAR)
-        # regionalLimitRelativeLuminanceDarker = cv2.resize(limitRelativeLuminanceDarker, regions, interpolation=cv2.INTER_LINEAR)
-
-        #cv2.imshow('Original', X8bit)
-        #cv2.waitKey(1)
+        relativeLuminanceLimits = relative_luminance_both_limits(relativeLuminance, previousRelativeLuminance)
+        lastChanges = update_both_last_flashes(lastChanges, relativeLuminanceLimits, frameRate)
+        flashes = cross_reference_both_transitions(lastChanges, relativeLuminanceLimits)
+        flash_counts = flash_both_frames_separator(flashes)
+        flash_detect_printout_both(flash_counts, frameCount, frameRate, thresholds)
 
         # SHOW MONITORS
         if displayAnalysis:
