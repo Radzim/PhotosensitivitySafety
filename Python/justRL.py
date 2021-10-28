@@ -1,11 +1,11 @@
-import cv2
 import pafy
 import plot
-from functions import *
+from frame_functions import *
+from help_functions import *
 
 # SETTINGS
 videoPick = 5
-displayAnalysis = False
+displayAnalysis = True
 
 # INITIALISE
 luminancePlot = plot.Plotter(500, 300)
@@ -13,6 +13,7 @@ luminanceLimitPlotLighter = plot.Plotter(500, 300)
 luminanceLimitPlotDarker = plot.Plotter(500, 300)
 redLimitPlot = plot.Plotter(500, 300)
 
+previousDisplayFrame = 0
 previousRelativeLuminance = 0.0
 previousRedMajority = 0.0
 previousRedSaturation = 0.0
@@ -22,9 +23,7 @@ frameCount = 0
 frameRate = 24
 
 # THRESHOLDS
-globalMaxThreshold = 0.25  # 25%
-globalMinThreshold = 1 / 9 * globalMaxThreshold  # 2.8%
-thresholds = globalMinThreshold, globalMaxThreshold
+thresholds = 0.25/9, 0.25  # 2.8%, 25.0%
 
 # VIDEO LIST
 videos = [
@@ -52,59 +51,37 @@ while True:
     if check:
 
         # CALCULATIONS
-
-        X8bit = cv2.resize(frame, (300, 225))
-
-        relativeLuminance = calculate_relative_luminance(X8bit)
+        frameWithoutArtifacts = cv2.resize(frame, (300, 225))
+        relativeLuminance = calculate_relative_luminance(frameWithoutArtifacts)
         relativeLuminanceLimits = relative_luminance_both_limits(relativeLuminance, previousRelativeLuminance)
         lastChanges = update_both_last_flashes(lastChanges, relativeLuminanceLimits, frameRate)
         flashes = cross_reference_both_transitions(lastChanges, relativeLuminanceLimits)
-        flash_counts = flash_both_frames_separator(flashes)
-        flash_detect_printout_both(flash_counts, frameCount, frameRate, thresholds)
+        flashCounts = flash_both_frames_separator(flashes)
+        flashFlag = flash_detect_printout_both(flashCounts, frameCount, frameRate, thresholds)
 
-        # SHOW MONITORS
+        # DISPLAY ANALYSIS
         if displayAnalysis:
-
             # SHOW VIDEOS
-
-            cv2.imshow('Original', X8bit)
-
-            limitRelativeLuminanceLighter8bit = np.array(np.multiply(limitRelativeLuminanceLighter, 255), dtype=np.uint8)
-            cv2.imshow('Lighter Relative Luminance Delta Breach', limitRelativeLuminanceLighter8bit)
-            limitRelativeLuminanceDarker8bit = np.array(np.multiply(limitRelativeLuminanceDarker, 255), dtype=np.uint8)
-            cv2.imshow('Darker Relative Luminance Delta Breach', limitRelativeLuminanceDarker8bit)
-
-            lastLighter8bit = np.array(np.multiply(lastLighter, 10), dtype=np.uint8)
-            cv2.imshow('LastLighter', lastLighter8bit)
-            lastDarker8bit = np.array(np.multiply(lastDarker, 10), dtype=np.uint8)
-            cv2.imshow('LastDarker', lastDarker8bit)
-
-            lighterDarkerFlash8bit = np.array(np.multiply(lighterDarkerFlash, 10), dtype=np.uint8)
-            cv2.imshow('Lighter-Darker Flash', lighterDarkerFlash8bit)
-            darkerLighterFlash8bit = np.array(np.multiply(darkerLighterFlash, 10), dtype=np.uint8)
-            cv2.imshow('Darker-Lighter Flash', darkerLighterFlash8bit)
-
-            # regionalLimitRelativeLuminance8bitLighter = np.array(np.multiply(regionalLimitRelativeLuminanceLighter, 255), dtype=np.uint8)
-            # cv2.imshow('Regional Lighter Relative Luminance Delta Breach', cv2.resize(regionalLimitRelativeLuminance8bitLighter, (200, 150), interpolation=cv2.INTER_NEAREST))
-            # regionalLimitRelativeLuminance8bitDarker = np.array(np.multiply(regionalLimitRelativeLuminanceDarker, 255), dtype=np.uint8)
-            # cv2.imshow('Regional Darker Relative Luminance Delta Breach', cv2.resize(regionalLimitRelativeLuminance8bitDarker, (200, 150), interpolation=cv2.INTER_NEAREST))
+            display_content(frameWithoutArtifacts, max_value=255)
+            display_content(relativeLuminance)
+            display_content(relativeLuminanceLimits[0])
+            display_content(relativeLuminanceLimits[1])
+            display_content(lastChanges[0], max_value=frameRate)
+            display_content(lastChanges[1], max_value=frameRate)
+            display_content(flashes[0], max_value=frameRate)
+            display_content(flashes[1], max_value=frameRate)
 
             # SHOW PLOTS
 
-            luminanceLimitPlotDarker.plot(np.average(limitRelativeLuminanceDarker8bit), label="Darker", line=0)
-            luminanceLimitPlotLighter.plot(np.average(limitRelativeLuminanceLighter8bit), label="Lighter", line=0)
-
+            # WAIT
             cv2.waitKey(10)
 
         # REMEMBER LAST FRAME
-
         previousRelativeLuminance = relativeLuminance
 
         continue
     break
 
 # END CAPTURE AND MONITORS
-
 capture.release()
-
 cv2.destroyAllWindows()

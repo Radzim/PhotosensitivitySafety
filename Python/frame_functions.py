@@ -63,11 +63,14 @@ def flash_both_frames_separator(both_flashes):
 
 def flash_detect_printout(flash_counts, frame_count, frame_rate, thresholds):
     global_minimum_threshold, global_maximum_threshold = thresholds
+    flash = False
     for frame_offset in range(len(flash_counts)):
         if flash_counts[frame_offset] >= global_maximum_threshold:
+            flash = True
             print("FLASH @ ", frame_count - frame_rate + frame_offset, "-", frame_count)
         elif flash_counts[frame_offset] >= global_minimum_threshold:
             print("potential flash @ ", frame_count - frame_rate + frame_offset, "-", frame_count)
+    return flash
 
 
 def flash_detect_printout_both(flash_counts, frame_count, frame_rate, thresholds):

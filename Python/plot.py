@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+
 class Plotter:
     def __init__(self, plot_width, plot_height):
         self.width = plot_width
