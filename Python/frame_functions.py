@@ -173,10 +173,11 @@ def show_one_rectangle(one_flash):
 
 
 def maximum_safe_transition(frame, previous_frame):
+    frame, previous_frame = frame.astype(float), previous_frame.astype(float)
     frame_delta = np.subtract(frame, previous_frame)
     new_frame_delta = np.maximum(np.minimum(frame_delta, 10), -10)
     new_frame = np.add(previous_frame, new_frame_delta)
-    return new_frame
+    return new_frame.astype(int)
 
 
 def safe_transition_on_flashes(unsafe_frame, safe_frame, flash_area):

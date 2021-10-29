@@ -4,9 +4,9 @@ from frame_functions import *
 from help_functions import *
 
 # SETTINGS
-videoPick = 5
+videoPick = 0
 displayAnalysis = True
-slowdown = 100
+slowdown = 10
 
 # INITIALISE
 luminancePlot = plot.Plotter(500, 300)
@@ -61,8 +61,12 @@ while True:
         brightestRectangles = [show_one_rectangle(singularLargeFlash) for singularLargeFlash in singularLargeFlashes]
         brightestRectanglesCombined = combine_images(brightestRectangles)
 
-        # safeFrame = maximum_safe_transition(downsizedFrame, previousDisplayFrame)
-        displayFrame = downsizedFrame  # safe_transition_on_flashes(downsizedFrame, safeFrame, singularLargeFlashesCombined)
+        #safeFrame = maximum_safe_transition(downsizedFrame, previousDisplayFrame)
+        #if len(singularLargeFlashes) > 0:
+            #displayFrame = safeFrame
+            #displayFrame = safe_transition_on_flashes(downsizedFrame, safeFrame, singularLargeFlashesCombined)  # np.maximum(np.add(relativeLuminanceLimits[0], relativeLuminanceLimits[1]), 1)
+        #else:
+        displayFrame = downsizedFrame
 
         # DISPLAY ANALYSIS
         if displayAnalysis:
