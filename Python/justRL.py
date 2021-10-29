@@ -6,6 +6,7 @@ from help_functions import *
 # SETTINGS
 videoPick = 5
 displayAnalysis = True
+slowdown = 100
 
 # INITIALISE
 luminancePlot = plot.Plotter(500, 300)
@@ -13,10 +14,7 @@ luminanceLimitPlotLighter = plot.Plotter(500, 300)
 luminanceLimitPlotDarker = plot.Plotter(500, 300)
 redLimitPlot = plot.Plotter(500, 300)
 
-previousDisplayFrame = 0
-previousRelativeLuminance = 0.0
-previousRedMajority = 0.0
-previousRedSaturation = 0.0
+previousDisplayFrame = np.zeros((225, 300, 3))
 lastChanges = (0.0, 0.0)
 
 frameCount = 0
@@ -49,20 +47,27 @@ while True:
     check, frame = capture.read()
 
     if check:
-
         # CALCULATIONS
-        frameWithoutArtifacts = cv2.resize(frame, (300, 225))
-        relativeLuminance = calculate_relative_luminance(frameWithoutArtifacts)
+        downsizedFrame = cv2.resize(frame, (300, 225))
+        relativeLuminance = calculate_relative_luminance(downsizedFrame)
+        previousRelativeLuminance = calculate_relative_luminance(previousDisplayFrame)
         relativeLuminanceLimits = relative_luminance_both_limits(relativeLuminance, previousRelativeLuminance)
         lastChanges = update_both_last_flashes(lastChanges, relativeLuminanceLimits, frameRate)
         flashes = cross_reference_both_transitions(lastChanges, relativeLuminanceLimits)
         flashCounts = flash_both_frames_separator(flashes)
-        flashFlag = flash_detect_printout_both(flashCounts, frameCount, frameRate, thresholds)
+        flash_detect_printout_both(flashes, flashCounts, frameCount, frameRate, thresholds)
+        singularLargeFlashes = all_large_flashes(flashes, flashCounts, thresholds)
+        singularLargeFlashesCombined = combine_images(singularLargeFlashes)
+        brightestRectangles = [show_one_rectangle(singularLargeFlash) for singularLargeFlash in singularLargeFlashes]
+        brightestRectanglesCombined = combine_images(brightestRectangles)
+
+        # safeFrame = maximum_safe_transition(downsizedFrame, previousDisplayFrame)
+        displayFrame = downsizedFrame  # safe_transition_on_flashes(downsizedFrame, safeFrame, singularLargeFlashesCombined)
 
         # DISPLAY ANALYSIS
         if displayAnalysis:
             # SHOW VIDEOS
-            display_content(frameWithoutArtifacts, max_value=255)
+            display_content(downsizedFrame, max_value=255)
             display_content(relativeLuminance)
             display_content(relativeLuminanceLimits[0])
             display_content(relativeLuminanceLimits[1])
@@ -70,14 +75,17 @@ while True:
             display_content(lastChanges[1], max_value=frameRate)
             display_content(flashes[0], max_value=frameRate)
             display_content(flashes[1], max_value=frameRate)
-
+            display_content(singularLargeFlashesCombined)
+            display_content(brightestRectanglesCombined)
+            #display_content(safeFrame, max_value=255)
+            display_content(displayFrame, max_value=255)
             # SHOW PLOTS
 
             # WAIT
-            cv2.waitKey(10)
+            cv2.waitKey(slowdown)
 
         # REMEMBER LAST FRAME
-        previousRelativeLuminance = relativeLuminance
+        previousDisplayFrame = displayFrame
 
         continue
     break
