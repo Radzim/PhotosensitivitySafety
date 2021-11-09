@@ -4,9 +4,9 @@ from frame_functions import *
 from help_functions import *
 
 # SETTINGS
-videoPick = 0
+videoPick = 8
 displayAnalysis = True
-slowdown = 10
+slowdown = 1000
 
 # INITIALISE
 luminancePlot = plot.Plotter(500, 300)
@@ -18,7 +18,7 @@ previousDisplayFrame = np.zeros((225, 300, 3))
 lastChanges = (0.0, 0.0)
 
 frameCount = 0
-frameRate = 24
+frameRate = 30
 
 # THRESHOLDS
 thresholds = 0.25/9, 0.25  # 2.8%, 25.0%
@@ -30,7 +30,10 @@ videos = [
     ("https://www.youtube.com/watch?v=FkhfLNfWIHA", 'pafy'),  # flashing images
     ("https://www.youtube.com/watch?v=XqZsoesa55w", 'pafy'),  # baby shark
     ("https://www.youtube.com/watch?v=0EqSXDwTq6U", 'pafy'),  # charlie bit my finger
-    ('C:/Users/radzi/OneDrive/Desktop/Project/Media/Pokemon.mp4', 'local')  # pokemon local
+    ('C:/Users/radzi/OneDrive/Desktop/Project/Media/Pokemon.mp4', 'local'),  # pokemon local
+    ('C:/Users/radzi/OneDrive/Desktop/Project/Media/PEAT_1.avi', 'local'),  # peat recording local
+    ('C:/Users/radzi/OneDrive/Desktop/Project/Media/video-1636024687.mp4', 'local'),  # lecture recording 1
+    ('C:/Users/radzi/OneDrive/Desktop/Project/Media/video-1636024693.mp4', 'local')  # lecture recording 2
 ]
 video = videos[videoPick]
 
@@ -41,7 +44,6 @@ else:
     capture = cv2.VideoCapture(video[0])
 
 while True:
-
     frameCount += 1
 
     check, frame = capture.read()

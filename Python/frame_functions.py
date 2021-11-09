@@ -1,12 +1,25 @@
+import cv2
 import numpy as np
 
 
 # ADD DOCSTRING
 
 
-def calculate_relative_luminance(frame):
+def calculate_relative_luminance_curve():
+    lut = np.divide(np.arange(256, dtype='uint8'), 255)
+    lut = np.maximum(np.divide(lut, 12.92), np.power(np.divide(lut + 0.055, 1.055), 2.4))
+    return lut
+
+
+def calculate_relative_luminance_old(frame):
     s_rgb = np.divide(np.ndarray.copy(frame).astype(float), 255)
     curve_rgb = np.maximum(np.divide(s_rgb, 12.92), np.power(np.divide(s_rgb + 0.055, 1.055), 2.4))
+    relative_luminance = np.dot(curve_rgb[..., :3], [0.0722, 0.7152, 0.2126])
+    return relative_luminance
+
+
+def calculate_relative_luminance(frame):
+    curve_rgb = cv2.LUT(frame, calculate_relative_luminance_curve())
     relative_luminance = np.dot(curve_rgb[..., :3], [0.0722, 0.7152, 0.2126])
     return relative_luminance
 
@@ -72,7 +85,7 @@ def flash_detect_printout(flash, flash_counts, frame_count, frame_rate, threshol
             one_flash = np.where(flash == frame_offset + 1, 1, 0)
             if np.sum(find_all_rectangle_sums(one_flash)) > 0:
                 regional_flash_found = True
-                print("FLASH @", frame_count - frame_rate + frame_offset, "-", frame_count)
+                print("FLASH @", round((frame_count - frame_rate + frame_offset)/frame_rate, 1), "-", round(frame_count/frame_rate, 1))
     return regional_flash_found
 
 
