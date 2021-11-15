@@ -1,107 +1,63 @@
-import datetime
+from cv2 import cv2
+import config
+# import functions.help_functions
+from w3c_guidelines.colour_equations import relative_luminance as w3c_rl
+from w3c_guidelines.colour_equations import red_saturation as w3c_rs
+from w3c_guidelines.general_flash_and_red_flash_thresholds import general_flash_thresholds as w3c_gft
+from w3c_guidelines.general_flash_and_red_flash_thresholds import red_flash_thresholds as w3c_rft
+from w3c_guidelines.general_flash_and_red_flash_thresholds import area_of_flashes as w3c_aof
+from w3c_guidelines.general_flash_and_red_flash_thresholds import pair_of_opposing_changes as w3c_pooc
+from timeit import default_timer as timer
 
-import cv2
-import numpy as np
-import pafy
-import plot
 
-# SETTINGS
-videoPick = 0
-displayAnalysis = True
+# INITIALISE ZEROS
+previous_relative_luminance = 0
+previous_red_saturation = 0
+previous_red_majority = 0
+recent_general_changes = (0.0, 0.0)
+recent_red_changes = (0.0, 0.0)
+frame_count = 0
+general_flashes_list = []
+red_flashes_list = []
 
-# INITIALISE
-luminancePlot = plot.Plotter(500, 300)
-luminanceLimitPlotLighter = plot.Plotter(500, 300)
-luminanceLimitPlotDarker = plot.Plotter(500, 300)
-redLimitPlot = plot.Plotter(500, 300)
-
-previousRelativeLuminance = 0
-previousRedMajority = 0
-previousRedSaturation = 0
-
-# VIDEO LIST
-videos = [
-    ("https://www.youtube.com/watch?v=GuLcxg5VGuo", 'pafy'),  # barney video cv
-    ("https://www.youtube.com/watch?v=FkhfLNfWIHA", 'pafy'),  # flashing images
-    ("https://www.youtube.com/watch?v=XqZsoesa55w", 'pafy'),  # baby shark
-    ("https://www.youtube.com/watch?v=0EqSXDwTq6U", 'pafy'),  # charlie bit my finger
-    ('C:/Users/radzi/Videos/uTorrent/ted.lasso.s02e01.1080p.web.h264-glhf[eztv.re].mkv', 'local')  # ted lasso
-]
-video = videos[videoPick]
-
-# SET VIDEO CAPTURE
-if video[1] == 'pafy':
-    capture = cv2.VideoCapture(pafy.new(video[0]).getbest(preftype="mp4").url)
-else:
-    capture = cv2.VideoCapture(video[0])
-
+capture = config.capture
 while True:
-
+    # GET NEW FRAME
+    frame_count += 1
     check, frame = capture.read()
-
-    if check:
-
-        # CALCULATIONS
-
-        X8bit = cv2.resize(frame, (300, 225))
-
-        XsRGB = np.divide(np.ndarray.copy(X8bit).astype(float), 255)
-
-        X = np.maximum(np.divide(XsRGB, 12.92), np.power(np.divide(XsRGB+0.055, 1.055), 2.4))
-
-        relativeLuminance = np.dot(X[..., :3], [0.0722, 0.7152, 0.2126])
-
-        redSaturation = np.divide(np.dot(X[..., :3], [0, 0, 1]), np.dot(X[..., :3], [1, 1, 1]))
-        redMajority = np.minimum(np.multiply(np.dot(X[..., :3], [-1, -1, 1]), 320), 0)
-
-        deltaRelativeLuminance = relativeLuminance-previousRelativeLuminance
-
-        limitRelativeLuminanceLighter = np.array(np.multiply(np.where(deltaRelativeLuminance >= 0.1, 1, 0), np.where(np.minimum(relativeLuminance, previousRelativeLuminance) <= 0.8, 1, 0)), dtype=np.uint8)
-        limitRelativeLuminanceDarker = np.array(np.multiply(np.where(deltaRelativeLuminance <= -0.1, 1, 0), np.where(np.minimum(relativeLuminance, previousRelativeLuminance) <= 0.8, 1, 0)), dtype=np.uint8)
-
-        deltaRedMajority = np.array(np.maximum(redMajority-previousRedMajority, previousRedMajority-redMajority))
-        limitRedMajority = np.array(np.multiply(np.where(deltaRedMajority >= 20, 1, 0), np.where(np.maximum(redSaturation, previousRedSaturation) >= 0.8, 1, 0)), dtype=np.uint8)
-
-        # SHOW MONITORS
-        if displayAnalysis:
-
-            # SHOW VIDEOS
-
-            cv2.imshow('Original', X8bit)
-
-            #relativeLuminance8bit = np.array(np.multiply(relativeLuminance, 255), dtype=np.uint8)
-            #cv2.imshow('Relative Luminance', relativeLuminance8bit)
-
-            #deltaRelativeLuminance8bit = np.array(np.multiply(deltaRelativeLuminance, 255), dtype=np.uint8)
-            #cv2.imshow('Relative Luminance Delta', deltaRelativeLuminance8bit)
-
-            limitRelativeLuminance8bitLighter = np.array(np.multiply(limitRelativeLuminanceLighter, 255), dtype=np.uint8)
-            cv2.imshow('Lighter Relative Luminance Delta Breach', limitRelativeLuminance8bitLighter)
-            limitRelativeLuminance8bitDarker = np.array(np.multiply(limitRelativeLuminanceDarker, 255), dtype=np.uint8)
-            cv2.imshow('Darker Relative Luminance Delta Breach', limitRelativeLuminance8bitDarker)
-
-            limitRedMajority8bit = np.array(np.multiply(limitRedMajority, 255), dtype=np.uint8)
-            cv2.imshow('Red Majority Delta Breach', limitRedMajority8bit)
-
-            # SHOW PLOTS
-
-            luminanceLimitPlotDarker.plot(np.average(limitRelativeLuminance8bitDarker), label="Darker", line=0)
-            luminanceLimitPlotLighter.plot(np.average(limitRelativeLuminance8bitLighter), label="Lighter", line=0)
-            redLimitPlot.plot(np.average(limitRedMajority8bit)*10, label="Red Flash", line=0)
-
-            cv2.waitKey(10)
-
-        # REMEMBER LAST FRAME
-
-        previousRelativeLuminance = relativeLuminance
-        previousRedMajority = redMajority
-        previousRedSaturation = redSaturation
-
-        continue
-    break
-
-# END CAPTURE AND MONITORS
-
-capture.release()
-
-cv2.destroyAllWindows()
+    if not check:
+        # END CAPTURE AND MONITORS
+        capture.release()
+        break
+    # CALCULATIONS
+    # smaller frame for calculations TODO: this should come from small flash exception
+    downsized_frame = cv2.resize(frame, config.analysisSize)
+    # GENERAL FLASHES
+    # detect changes in relative luminance
+    relative_luminance = w3c_rl.calculate_relative_luminance(downsized_frame)
+    general_limits = w3c_gft.general_limits(relative_luminance, previous_relative_luminance)
+    # track pairs of opposing relative luminance changes
+    recent_general_changes = w3c_pooc.update_last_flashes(recent_general_changes, general_limits, config.frame_rate)
+    general_flashes = w3c_pooc.cross_reference_transitions(recent_general_changes, general_limits)
+    # interpret pairs of opposing luminance changes
+    general_flash_counts = w3c_pooc.flash_frames_separator(general_flashes)
+    general_detected_flashes = w3c_aof.detect_flashes(general_flashes, general_flash_counts, frame_count, config.frame_rate)
+    general_flashes_list.extend(general_detected_flashes)
+    # RED FLASHES
+    # detect changes in saturated red
+    red_saturation = w3c_rs.calculate_red_saturation(downsized_frame)
+    red_majority = w3c_rs.calculate_red_majority(downsized_frame)
+    red_change_limits = w3c_rft.red_saturation_limits(red_saturation, previous_red_saturation, red_majority, previous_red_majority)
+    # track pairs of opposing red changes
+    recent_red_changes = w3c_pooc.update_last_flashes(recent_red_changes, red_change_limits, config.frame_rate)
+    red_flashes = w3c_pooc.cross_reference_transitions(recent_red_changes, red_change_limits)
+    # interpret pairs of opposing red changes
+    red_flash_counts = w3c_pooc.flash_frames_separator(red_flashes)
+    red_detected_flashes = w3c_aof.detect_flashes(red_flashes, red_flash_counts, frame_count, config.frame_rate)
+    red_flashes_list.extend(red_detected_flashes)
+    # REMEMBER LAST FRAME
+    previous_relative_luminance = relative_luminance
+    previous_red_saturation = red_saturation
+    previous_red_majority = red_majority
+print(general_flashes_list)
+print(red_flashes_list)

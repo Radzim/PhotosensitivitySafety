@@ -1,7 +1,8 @@
 import pafy
-from frame_functions import *
-from help_functions import *
+from recycle_bin.frame_functions import *
+from functions.help_functions import *
 from datetime import datetime
+import cv2.cv2 as cv2
 
 time0 = datetime.now()
 
@@ -25,9 +26,8 @@ videos = [
     ('C:/Users/radzi/OneDrive/Desktop/Project/Media/PEAT_1.avi', 'local'),  # peat recording local
     ('C:/Users/radzi/OneDrive/Desktop/Project/Media/video-1636024687.mp4', 'local'),  # lecture recording 1
     ('C:/Users/radzi/OneDrive/Desktop/Project/Media/video-1636024693.mp4', 'local'),  # lecture recording 2
-    ('C:/Users/radzi/OneDrive/Desktop/Project/Media/Idiocracy.mp4', 'local')  # lecture recording 2
 ]
-video = videos[9]
+video = videos[0]
 
 if video[1] == 'pafy':
     capture = cv2.VideoCapture(pafy.new(video[0]).getbest(preftype="mp4").url)
@@ -53,7 +53,7 @@ while True:
     if check:
         # CALCULATIONS
         displayFrame = cv2.resize(frame, analysisSize)
-        relativeLuminance = calculate_relative_luminance(displayFrame)
+        relativeLuminance = w3c_relative_luminance.calculate_relative_luminance(displayFrame)
         relativeLuminanceLimits = relative_luminance_both_limits(relativeLuminance, previousRelativeLuminance)
         lastChanges = update_both_last_flashes(lastChanges, relativeLuminanceLimits, frameRate)
         flashes = cross_reference_both_transitions(lastChanges, relativeLuminanceLimits)
