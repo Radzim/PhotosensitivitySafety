@@ -36,7 +36,7 @@ while True:
     # TODO: this should come from small flash exception
     # TODO: pass aspect ratio and grain
     # TODO: pick between frame render and manual shape data
-    rendered_frame = cv2.resize(rendered_frame, w3c_sv.frame_shape)
+    rendered_frame = cv2.resize(rendered_frame, (300, 225))
     functions.help_functions.display_content(rendered_frame, max_value=255)
     cv2.waitKey(1)
     # GENERAL FLASHES

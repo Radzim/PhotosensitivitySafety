@@ -15,7 +15,7 @@ if BsRGB <= 0.03928 then B = BsRGB/12.92 else B = ((BsRGB+0.055)/1.055) ^ 2.4
 
 
 def calculate_relative_luminance(frame):
-    # TODO: make this calculate just once
+    # TODO (low priority): make this calculate just once
     curve_lut = calculate_relative_luminance_curve()
     curve_rgb = cv2.LUT(frame, curve_lut)
     # relative luminance of a color is defined as L = 0.2126 * R + 0.7152 * G + 0.0722 * B
