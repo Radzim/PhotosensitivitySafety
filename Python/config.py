@@ -27,6 +27,5 @@ if video[1] == 'pafy':
 else:
     capture = cv2.VideoCapture(video[0])
 
-# TODO: GET THESE AUTOMATICALLY
+# TODO: GET THIS AUTOMATICALLY
 frame_rate = 30
-analysisSize = (300, 225)
