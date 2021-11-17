@@ -35,22 +35,28 @@ red_flashes_list = []
 
 def threaded_grab():
     global sct_img
+    global sct_fresh
     while True:
         sct_img = sct.grab(monitor)
+        sct_fresh = True
 
 
 sct = mss()
 monitor = sct.monitors[1]
 sct_img = 0
+sct_fresh = False
 thread = Thread(target=threaded_grab)
 thread.start()
-while sct_img == 0:
+while not sct_fresh:
     pass
 
 while True:
     # GET NEW FRAME
+    while not sct_fresh:
+        pass
     frame_count += 1
     rendered_frame = np.array(sct_img)[:, :, :3]
+    sct_fresh = False
     # CALCULATIONS
     # render the frame onto a screen
     # (useless here)
@@ -72,7 +78,7 @@ while True:
     general_flash_counts = w3c_pooc.flash_frames_separator(general_flashes)
     general_detected_flashes = w3c_aof.detect_flashes(general_flashes, general_flash_counts, frame_count, config.frame_rate, flash_type='general')
     for fl in general_detected_flashes:
-        print(fl.flash_type, fl.start_frame, fl.end_frame)
+        print(fl.flash_type, fl.start_frame, fl.end_frame, time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     # RED FLASHES
     # detect changes in saturated red
     red_saturation = w3c_rs.calculate_red_saturation(rendered_frame)
