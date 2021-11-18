@@ -36,6 +36,7 @@ def red_majority_limit(red_majority, previous_red_majority, red_saturation_condi
 
 
 def red_saturation_minimum(red_saturation, previous_red_saturation):
+    # "for either or both states involved in each transition, R/(R+ G + B) >= 0.8"
     max_red_saturation = np.maximum(red_saturation, previous_red_saturation)
     # "R/(R+ G + B) >= 0.8"
     threshold_red_saturation = np.where(max_red_saturation > 0.8, 1, 0)

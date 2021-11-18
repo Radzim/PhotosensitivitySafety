@@ -65,7 +65,7 @@ while True:
     # TODO: pass aspect ratio and grain
     # TODO: pick between frame render and manual shape data
     rendered_frame = cv2.resize(rendered_frame, (300, 225))
-    functions.help_functions.display_content(rendered_frame, max_value=255)
+    # functions.help_functions.display_content(rendered_frame, max_value=255)
     cv2.waitKey(1)
     # GENERAL FLASHES
     # detect changes in relative luminance
@@ -91,7 +91,7 @@ while True:
     red_flash_counts = w3c_pooc.flash_frames_separator(red_flashes)
     red_detected_flashes = w3c_aof.detect_flashes(red_flashes, red_flash_counts, frame_count, config.frame_rate, flash_type='red')
     for fl in red_detected_flashes:
-        print(fl.flash_type, fl.start_frame, fl.end_frame)
+        print(fl.flash_type, fl.start_frame, fl.end_frame, time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     # REMEMBER LAST FRAME
     previous_relative_luminance = relative_luminance
     previous_red_saturation = red_saturation

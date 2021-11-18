@@ -1,4 +1,5 @@
 import numpy as np
+from cv2 import cv2
 
 """
 The current working definition in the field for "pair of opposing transitions involving a saturated red" is where, 
@@ -9,9 +10,12 @@ R-G-B)x320 is > 20 (negative values of (R-G-B)x320 are set to zero) for both tra
 
 
 def calculate_red_saturation(frame):
+    # "R, G, B values range from 0-1 as specified in “relative luminance” definition"
+    curve_lut = calculate_relative_luminance_curve()
+    curve_rgb = cv2.LUT(frame, curve_lut)
     # "R/(R+ G + B)"
-    numerator = np.dot(frame[..., :3], [0, 0, 1])
-    denominator = np.dot(frame[..., :3], [1, 1, 1])
+    numerator = np.dot(curve_rgb[..., :3], [0, 0, 1])
+    denominator = np.dot(curve_rgb[..., :3], [1, 1, 1])
     # note: this definition has a divide by zero problem
     red_saturation = np.divide(numerator, denominator, out=np.zeros(numerator.shape, dtype=float), where=denominator != 0)
     return red_saturation
@@ -21,3 +25,10 @@ def calculate_red_majority(frame):
     # "(R-G-B)x320"
     red_majority = np.minimum(np.multiply(np.dot(frame[..., :3], [-1, -1, 1]), 320), 0)
     return red_majority
+
+
+def calculate_relative_luminance_curve():
+    lut = np.divide(np.arange(256, dtype='uint8'), 255)
+    # "R = RsRGB/12.92 else R = ((RsRGB+0.055)/1.055) ^ 2.4"
+    lut = np.maximum(np.divide(lut, 12.92), np.power(np.divide(lut + 0.055, 1.055), 2.4))
+    return lut
