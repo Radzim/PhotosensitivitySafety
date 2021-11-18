@@ -7,6 +7,7 @@ degree visual field on the screen (25% of any 10 degree visual field on the scre
 
 
 # TODO: "10 degree visual field on the screen"
+# https://www.w3.org/TR/2016/NOTE-WCAG20-TECHS-20161007/G176
 frame_shape = (225, 300)
 visual_field = (75, 100)
 

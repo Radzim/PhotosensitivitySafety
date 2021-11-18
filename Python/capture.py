@@ -96,4 +96,5 @@ while True:
     previous_relative_luminance = relative_luminance
     previous_red_saturation = red_saturation
     previous_red_majority = red_majority
+    functions.help_functions.display_content(relative_luminance)
 

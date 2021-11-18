@@ -22,10 +22,10 @@ frame_count = 0
 general_flashes_list = []
 red_flashes_list = []
 
-capture = config.capture
+capture = cv2.VideoCapture('video_blue_green.avi')
+
 while True:
     # GET NEW FRAME
-    print(time.time())
     frame_count += 1
     # print(time.time())
     check, frame = capture.read()
@@ -33,6 +33,7 @@ while True:
         # END CAPTURE AND MONITORS
         capture.release()
         break
+    print(frame[100, 100])
     functions.help_functions.display_content(frame, max_value=255)
     # CALCULATIONS
     # render the frame onto a screen
