@@ -14,16 +14,16 @@ screen sizes and viewing distances (e.g., 15-17 inch screen at 22-26 inches). ""
 
 display_properties = {'width': 1024, 'height': 768, 'size': 16, 'distance': 24}
 # TODO: "10 degree visual field on the screen"
-# frame_shape = (display_properties['width'], display_properties['height'])
+frame_shape = (display_properties['width'], display_properties['height'])
 # TODO: first, make this fullHD
 # TODO: second, carefully resize first
-frame_shape = (480, 320)
-visual_field = (100, 75)
+# frame_shape = (480, 320)
+visual_field = (341, 256)
 
 # "25% of any 10 degree visual field on the screen"
-regional_threshold = 0.25
+# regional_threshold = 0.25
 # if below global_minimum_threshold there cannot be any rectangles
-global_minimum_threshold = 0.25 / (frame_shape[0] * frame_shape[1] / visual_field[0] / visual_field[1])
+# global_minimum_threshold = 0.25 / (frame_shape[0] * frame_shape[1] / visual_field[0] / visual_field[1])
 
 
 def render_onto_display(frame, display_size, size=None, position=(0, 0), interpolation=cv2.INTER_LINEAR):
