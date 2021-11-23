@@ -1,10 +1,12 @@
 import os
+import time
+
 from kivy.uix.filechooser import FileChooserListView
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.app import App
-
+import main
 
 class InterfaceManager(BoxLayout):
 
@@ -32,6 +34,8 @@ class InterfaceManager(BoxLayout):
         filechooser = FileChooserListView()
         filechooser.bind(on_selection=lambda x: self.selected(filechooser.selection))
 
+        loading_label = Label(text="Analysing...", size_hint=(None, None), pos_hint=({'center_x': 0.5, 'y': 0.25}), size=(150, 44))
+
         # CONTAINERS
 
         # main screen
@@ -46,6 +50,17 @@ class InterfaceManager(BoxLayout):
         container.add_widget(back_btn1)
         container.add_widget(open_btn)
         self.file_open = container
+
+        # analysing
+        container = BoxLayout(orientation='vertical')
+        container.add_widget(loading_label)
+        self.result = container
+
+        # display result
+        container = BoxLayout(orientation='vertical')
+        printout = Label(text="Results will display here", size_hint=(None, None), pos_hint=({'center_x': 0.5, 'y': 0.5}), size=(150, 44))
+        container.add_widget(printout)
+        self.result_values = container
 
         # capture screen
         container = BoxLayout(orientation='vertical')
@@ -77,13 +92,22 @@ class InterfaceManager(BoxLayout):
     # ACTIONS
 
     def open(self, path, filename):
-        if len(filename) > 0:
-            print(filename)
-            print(os.path.join(path, filename[0]))
+        self.clear_widgets()
+        self.add_widget(self.result)
+        text_name = os.path.join(path, filename[0])
+        # main.run(text_name)
+        time.sleep(3)
+        self.open_analyse(text_name)
+
+    def open_analyse(self, text_name):
+        self.clear_widgets()
+        self.add_widget(self.result_values)
+
 
 class PhotosensitivitySafetyApp(App):
     def build(self):
         return InterfaceManager(orientation='vertical')
+
 
 if __name__ == '__main__':
     PhotosensitivitySafetyApp().run()

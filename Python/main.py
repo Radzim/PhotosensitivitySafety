@@ -12,7 +12,8 @@ from w3c_guidelines.general_flash_and_red_flash_thresholds import pair_of_opposi
 from w3c_guidelines.general_flash_and_red_flash_thresholds import screen_viewing as w3c_sv
 
 
-def run():
+def run(filename):
+    print(filename)
     # INITIALISE ZEROS
     previous_relative_luminance = 0
     previous_red_saturation = 0
@@ -23,7 +24,7 @@ def run():
     general_flashes_list = []
     red_flashes_list = []
 
-    capture = cv2.VideoCapture('C:/Users/radzi/OneDrive/Desktop/II/Project/Media/pokemon.mp4')
+    capture = cv2.VideoCapture(filename)
 
     while True:
         # GET NEW FRAME
@@ -72,9 +73,12 @@ def run():
         previous_relative_luminance = relative_luminance
         previous_red_saturation = red_saturation
         previous_red_majority = red_majority
+    ret_list = []
     for fl in general_flashes_list+red_flashes_list:
-        print(fl.flash_type, fl.start_frame, fl.end_frame)
+        ret_list.append((fl.flash_type, fl.start_frame, fl.end_frame))
+        # print(fl.flash_type, fl.start_frame, fl.end_frame)
+    return ret_list
 
 
 if __name__ == '__main__':
-    run()
+    run('C:/Users/radzi/OneDrive/Desktop/II/Project/Media/pokemon.mp4')
