@@ -3,40 +3,38 @@ from cv2 import cv2
 
 import functions.help_functions
 
-video_name = 'C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/small_bars.avi'
+video_name = 'C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/green_blue.avi'
 video = cv2.VideoWriter(video_name, 0, 30, (1024, 768))
 
-frame1 = np.array([[(255,255,255), (0,0,0), (0,0,0), (0,0,0), (0,0,0)]*3]*4, dtype='uint8')
-frame2 = np.array([[(255,255,255), (0,0,0), (0,0,0), (0,0,0), (0,0,0)]*3+[(0,0,0), (0,0,0), (0,0,0), (0,0,0), (0,0,0)]]*3+[[(0,0,0), (0,0,0), (0,0,0), (0,0,0), (0,0,0)]*4], dtype='uint8')
+# frame1 = np.array([[(255,255,255), (0,0,0), (0,0,0), (0,0,0), (0,0,0)]*3]*4, dtype='uint8')
+# frame2 = np.array([[(255,255,255), (0,0,0), (0,0,0), (0,0,0), (0,0,0)]*3+[(0,0,0), (0,0,0), (0,0,0), (0,0,0), (0,0,0)]]*3+[[(0,0,0), (0,0,0), (0,0,0), (0,0,0), (0,0,0)]*4], dtype='uint8')
 
 count = 0
-while count < 100:
-    count += 1
-    print(count)
-    print(frame1)
-    image = np.zeros((768, 1024, 3), np.uint8)
-    if count % 2 == 1:
-        image = cv2.resize(frame2, (1024, 768), interpolation=cv2.INTER_NEAREST)
-    video.write(image)
-    functions.help_functions.display_content(image, max_value=255)
-    functions.help_functions.display_content(frame2, max_value=255)
-    functions.help_functions.display_content(frame1, max_value=255)
-    cv2.waitKey(1)
-    # CAPTURE IS GETTING (255 14 0) and (0 80 0)
-    # FILE IS GETTING (250 0 0) and (0 94 0)
-
-
 # while count < 100:
 #     count += 1
 #     print(count)
+#     print(frame1)
 #     image = np.zeros((768, 1024, 3), np.uint8)
-#     if count % 4 < 2:
-#         image[:] = (255, 0, 0)
-#     else:
-#         image[:] = (0, 96, 0)
+#     if count % 2 == 1:
+#         image = cv2.resize(frame2, (1024, 768), interpolation=cv2.INTER_NEAREST)
 #     video.write(image)
-#     # CAPTURE IS GETTING (255 14 0) and (0 80 0)
-#     # FILE IS GETTING (250 0 0) and (0 94 0)
+#     functions.help_functions.display_content(image, max_value=255)
+#     functions.help_functions.display_content(frame2, max_value=255)
+#     functions.help_functions.display_content(frame1, max_value=255)
+#     cv2.waitKey(1)
+
+
+while count < 100:
+    count += 1
+    print(count)
+    image = np.zeros((768, 1024, 3), np.uint8)
+    if count % 4 < 2:
+        image[:] = (255, 0, 0)
+    else:
+        image[:] = (0, 96, 0)
+    video.write(image)
+    # CAPTURE IS GETTING (255 14 0) and (0 80 0)
+    # FILE IS GETTING (250 0 0) and (0 94 0)
 #
 # while count < 200:
 #     count += 1
