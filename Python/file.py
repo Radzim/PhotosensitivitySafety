@@ -13,6 +13,7 @@ from w3c_guidelines.general_flash_and_red_flash_thresholds import screen_viewing
 from w3c_guidelines.aggregating_functions import aggregation as w3c_ag
 import matplotlib.pyplot as plt
 
+
 def run(filename):
     print(filename)
     # INITIALISE ZEROS
@@ -38,7 +39,6 @@ def run(filename):
             # END CAPTURE AND MONITORS
             capture.release()
             break
-        functions.help_functions.display_content(frame, max_value=255)
         # CALCULATIONS
         # render the frame onto a screen
         rendered_frame = w3c_sv.render_onto_display(frame, w3c_sv.frame_shape)
@@ -68,13 +68,17 @@ def run(filename):
         previous_relative_luminance = relative_luminance
         previous_red_saturation = red_saturation
         previous_red_majority = red_majority
-    plt.plot(general_flashes_counter)
-    plt.plot(red_flashes_counter)
-    plt.plot([3]*len(general_flashes_counter))
+    print(general_flashes_lighter)
+    print(general_flashes_darker)
+    print(red_flashes_lighter)
+    print(red_flashes_darker)
+    plt.plot(np.arange(len(general_flashes_counter))/config.frame_rate, general_flashes_counter)
+    plt.plot(np.arange(len(general_flashes_counter))/config.frame_rate, red_flashes_counter)
+    plt.plot(np.arange(len(general_flashes_counter))/config.frame_rate, [3]*len(general_flashes_counter))
     plt.ylabel('Flash Counts')
     plt.show()
     return None
 
 
 if __name__ == '__main__':
-    print(run('C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/powerpoint2.avi'))
+    print(run('C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video.avi'))
