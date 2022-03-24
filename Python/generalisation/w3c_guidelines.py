@@ -1,11 +1,10 @@
 import time
 
-import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from lambdas import *
-from libraries import functions  # relative, max color,
+from GitHub.Python.generalisation.lambdas import *
+from GitHub.Python.generalisation.libraries import functions
 
 import re
 def count_flashes(flashes_lighter, flashes_darker, frame_rate):

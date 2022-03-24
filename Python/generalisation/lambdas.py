@@ -1,9 +1,7 @@
 from cv2 import cv2
 import numpy as np
-import pandas as pd
-import time
 import functools
-from libraries import functions, spaces, custom
+from GitHub.Python.generalisation.libraries import spaces
 
 
 class InputToArray:
@@ -81,3 +79,17 @@ class Compose:
 
     def run(self, array):
         return self.fun(array)
+
+
+class Register:
+    def __init__(self):
+        self.values = {}
+
+    def add(self, x, name):
+        if name in self.values.keys():
+            self.values[name].append(x)
+        else:
+            self.values[name] = [x]
+
+    def get(self, name):
+        return self.values[name]
