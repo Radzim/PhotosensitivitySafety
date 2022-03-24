@@ -51,16 +51,20 @@ def run(filename):
         cv2.waitKey(1)
         # GENERAL FLASHES
         # detect changes in relative luminance
-        relative_luminance = w3c_rl.calculate_relative_luminance(rendered_frame)
+        relative_luminance = w3c_rl.calculate_relative_luminance(frame)
         general_limits = w3c_gft.general_limits(relative_luminance, previous_relative_luminance)
         general_flashes_lighter.append(np.max(w3c_aof.find_all_rectangle_sums(general_limits[0])))
         general_flashes_darker.append(np.max(w3c_aof.find_all_rectangle_sums(general_limits[1])))
         general_flashes_counter.append(w3c_ag.count_flashes(general_flashes_lighter, general_flashes_darker, config.frame_rate))
         # RED FLASHES
         # detect changes in saturated red
-        red_saturation = w3c_rs.calculate_red_saturation(rendered_frame)
-        red_majority = w3c_rs.calculate_red_majority(rendered_frame)
+        red_saturation = w3c_rs.calculate_red_saturation(frame)
+        print(sum(red_saturation))
+        red_majority = w3c_rs.calculate_red_majority(frame)
+        print(sum(red_majority))
         red_change_limits = w3c_rft.red_saturation_limits(red_saturation, previous_red_saturation, red_majority, previous_red_majority)
+        print(sum(red_change_limits[0]))
+        print(sum(red_change_limits[1]))
         red_flashes_lighter.append(np.max(w3c_aof.find_all_rectangle_sums(red_change_limits[0])))
         red_flashes_darker.append(np.max(w3c_aof.find_all_rectangle_sums(red_change_limits[1])))
         red_flashes_counter.append(w3c_ag.count_flashes(red_flashes_lighter, red_flashes_darker, config.frame_rate))

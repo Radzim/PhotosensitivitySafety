@@ -23,12 +23,15 @@ def calculate_red_saturation(frame):
 
 def calculate_red_majority(frame):
     # "(R-G-B)x320"
-    red_majority = np.minimum(np.multiply(np.dot(frame[..., :3], [-1, -1, 1]), 320), 0)
+    curve_lut = calculate_relative_luminance_curve()
+    curve_rgb = cv2.LUT(frame, curve_lut)
+    red_majority = np.maximum(np.multiply(np.dot(curve_rgb[..., :3], [-1, -1, 1]), 320), 0)
     return red_majority
 
 
 def calculate_relative_luminance_curve():
     lut = np.divide(np.arange(256, dtype='uint8'), 255)
     # "R = RsRGB/12.92 else R = ((RsRGB+0.055)/1.055) ^ 2.4"
-    lut = np.maximum(np.divide(lut, 12.92), np.power(np.divide(lut + 0.055, 1.055), 2.4))
+    lut = np.array([((X + 0.055) / 1.055) ** 2.4 if X > 0.03928 else X / 12.92 for X in lut])
+    # lut = np.maximum(np.divide(lut, 12.92), np.power(np.divide(lut + 0.055, 1.055), 2.4))
     return lut

@@ -17,6 +17,17 @@ class InputToArray:
         return cv2.LUT(array, self.lut)
 
 
+class ArrayToArray:
+    def __init__(self, fun, vector_form=False):
+        if vector_form:
+            self.fun = fun
+        else:
+            self.fun = np.vectorize(fun)
+
+    def run(self, array):
+        return self.fun(array)
+
+
 class ArrayToArrayChannels:
     def __init__(self, fun, vector_form=False):
         if vector_form:
