@@ -3,8 +3,8 @@ import time
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from GitHub.Python.generalisation.lambdas import *
-from GitHub.Python.generalisation.libraries import functions
+from GitHub.generalisation.lambdas import *
+from GitHub.generalisation.libraries import common_functions as functions, custom_functions
 
 import re
 def count_flashes(flashes_lighter, flashes_darker, frame_rate):
@@ -37,12 +37,12 @@ def count_flashes(flashes_lighter, flashes_darker, frame_rate):
 # redMajorityChangeDown = ArrayAndPastToArray(lambda Present, Past: (Present - Past) < -20)
 # redSaturationChange = ArrayAndPastToArray(lambda Present, Past: max(Present, Past) >= 0.8)
 # bothConditions = ArraysToArray(lambda Array1, Array2: Array1 * Array2)
-rlCurve = functions.colorCurve(curve='RGB2XYZ', fromRGB=True)
+rlCurve = functions.colorCurve(curve='RGB2XYZ')
 relativeLuminance = functions.relativeLuminance()
 relativeLuminanceLighter = ArrayAndPastToArray(lambda Present, Past:  np.where(Present - Past >= 0.1, 1, 0) * np.where(Past <= 0.8, 1, 0), vector_form=True)
 relativeLuminanceDarker = ArrayAndPastToArray(lambda Present, Past:  np.where(Past - Present >= 0.1, 1, 0) * np.where(Present <= 0.8, 1, 0), vector_form=True)
 relativeLuminanceCondition = ArrayAndPastToArray(lambda Present, Past: np.where(np.minimum(Present, Past) <= 0.8, 1, 0), vector_form=True)
-maximumRegion = ArrayToBoolean(lambda x: custom.area_averages_max(x, threshold=0.25))
+maximumRegion = ArrayToValue(lambda x: custom_functions.area_averages_max(x, threshold=0.25))
 redSaturation = ArrayToArrayChannels(lambda R, G, B: np.divide(R, (R + G + B), out=np.zeros(R.shape, dtype=float), where=R != 0), vector_form=True)
 redMajority = ArrayToArrayChannels(lambda R, G, B: np.maximum(R - G - B, 0) * 320, vector_form=True)
 redMajorityChangeUp = ArrayAndPastToArray(lambda Present, Past: np.where(Present - Past > 20, 1, 0), vector_form=True)

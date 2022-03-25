@@ -1,11 +1,10 @@
 from cv2 import cv2
 import numpy as np
 import functools
-from GitHub.Python.generalisation.libraries import spaces
 
 
 class InputToArray:
-    def __init__(self, fun, lut=spaces.eight_bit(), vector_form=False):
+    def __init__(self, fun, lut=np.arange(256), vector_form=False):
         if vector_form:
             self.lut = fun(lut)
         else:
@@ -63,7 +62,7 @@ class ArrayAndPastToArray:
         return ret
 
 
-class ArrayToBoolean:
+class ArrayToValue:
     def __init__(self, fun):
         self.fun = fun
 
@@ -72,24 +71,10 @@ class ArrayToBoolean:
 
 
 class Compose:
-    def __init__(self, *funs):
+    def __init__(self, *functions):
         def compose(f, g):
             return lambda x: f(g(x))
-        self.fun = functools.reduce(compose, funs, lambda x: x)
+        self.fun = functools.reduce(compose, functions, lambda x: x)
 
     def run(self, array):
         return self.fun(array)
-
-
-class Register:
-    def __init__(self):
-        self.values = {}
-
-    def add(self, x, name):
-        if name in self.values.keys():
-            self.values[name].append(x)
-        else:
-            self.values[name] = [x]
-
-    def get(self, name):
-        return self.values[name]

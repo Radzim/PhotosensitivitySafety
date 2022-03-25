@@ -1,6 +1,3 @@
-from GitHub.Python.generalisation.lambdas import *
-
-
 def colorCurve(curve):
     curves = {
         'RGB2sRGB': lambda X: X / 255,
@@ -25,7 +22,7 @@ def pastOrPresentThreshold(threshold, direction=1):
 
 
 def colorProportion(red=0, green=0, blue=0):
-    return ArrayToArrayChannels(lambda R, G, B: np.divide(red*R, green*G, blue*B, (R + G + B), out=np.zeros(R.shape, dtype=float), where=R != 0), vector_form=True)
+    return ArrayToArrayChannels(lambda R, G, B: np.divide(red*R + green*G + blue*B, (R + G + B), out=np.zeros(R.shape, dtype=float), where=R != 0), vector_form=True)
 
 
 def twoConditions(logic=np.logical_and):
