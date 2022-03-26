@@ -1,3 +1,7 @@
+from GitHub.generalisation.function_type_objects import *
+import numpy as np
+
+
 def colorCurve(curve):
     curves = {
         'RGB2sRGB': lambda X: X / 255,

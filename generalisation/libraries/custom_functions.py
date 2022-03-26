@@ -33,4 +33,4 @@ def count_flashes(flashes_lighter, flashes_darker, frame_rate=30):
     both_channels = re.sub('1+', '1', both_channels)
     both_channels = re.sub('2+', '2', both_channels)
     count = len(both_channels)
-    return count
+    return count/2

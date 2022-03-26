@@ -3,8 +3,9 @@ import time
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from GitHub.generalisation.lambdas import *
+from GitHub.generalisation.function_type_objects import *
 from GitHub.generalisation.libraries import common_functions as functions, custom_functions
+
 
 import re
 def count_flashes(flashes_lighter, flashes_darker, frame_rate):
