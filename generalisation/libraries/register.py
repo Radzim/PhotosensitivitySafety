@@ -1,5 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
+import matplotlib.animation as animation
 
 
 class Register:
@@ -23,3 +24,4 @@ class Register:
             axs[i].set_title(titles[i])
         fig.tight_layout()
         plt.show()
+

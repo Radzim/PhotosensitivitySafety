@@ -31,13 +31,3 @@ def colorProportion(red=0, green=0, blue=0):
 
 def twoConditions(logic=np.logical_and):
     return ArraysToArray(lambda Array1, Array2: logic(Array1, Array2), vector_form=True)
-
-# lighter = ArrayAndPastToArray(lambda Present, Past:  np.where(Present - Past >= 0.1, 1, 0) * np.where(Past <= 0.8, 1, 0), vector_form=True)
-# darker = ArrayAndPastToArray(lambda Present, Past:  np.where(Past - Present >= 0.1, 1, 0) * np.where(Present <= 0.8, 1, 0), vector_form=True)
-# maximumRegion = ArrayToBoolean(lambda x: custom.area_averages_max(x, threshold=0.25))
-# redSaturation = ArrayToArrayChannels(lambda R, G, B: np.divide(R, (R + G + B), out=np.zeros(R.shape, dtype=float), where=R != 0), vector_form=True)
-# redMajority = ArrayToArrayChannels(lambda R, G, B: np.maximum(R - G - B, 0) * 320, vector_form=True)
-# redMajorityChangeUp = ArrayAndPastToArray(lambda Present, Past: np.where(Present - Past > 20, 1, 0), vector_form=True)
-# redMajorityChangeDown = ArrayAndPastToArray(lambda Present, Past: np.where(Past - Present > 20, 1, 0), vector_form=True)
-# redSaturationChange = ArrayAndPastToArray(lambda Present, Past: np.maximum(Present, Past) >= 0.8, vector_form=True)
-# bothConditions = ArraysToArray(lambda Array1, Array2: np.logical_and(Array1, Array2), vector_form=True)

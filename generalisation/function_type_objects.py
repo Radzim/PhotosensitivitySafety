@@ -70,6 +70,28 @@ class ArrayToValue:
         return self.fun(array)
 
 
+class ValueHistoryToValue:
+    def __init__(self, fun):
+        self.fun = fun
+        self.history = []
+
+    def run(self, value):
+        self.history.append(value)
+        return self.fun(self.history)
+
+
+class ValueHistoriesToValue:
+    def __init__(self, fun):
+        self.fun = fun
+        self.history1 = []
+        self.history2 = []
+
+    def run(self, value1, value2):
+        self.history1.append(value1)
+        self.history2.append(value2)
+        return self.fun(self.history1, self.history2)
+
+
 class Compose:
     def __init__(self, *functions):
         def compose(f, g):

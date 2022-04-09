@@ -16,8 +16,11 @@ redProportionCondition = common_functions.pastOrPresentThreshold(0.8, direction=
 redProportion = common_functions.colorProportion(red=1)
 bothConditions = common_functions.twoConditions()
 redSaturation = ArrayToArrayChannels(lambda R, G, B: np.maximum(R - G - B, 0) * 320, vector_form=True)
-maximumRegion = lambda x: custom_functions.area_averages_max(x, threshold=0.25)
-full_flash_count = lambda x, y: custom_functions.count_flashes(x, y, frame_rate=30)
+
+maximumRegion = ArrayToValue(lambda x: custom_functions.area_averages_max(x, threshold=0.25))
+# REMEMBER
+fullFlashCountGeneral = ValueHistoriesToValue(lambda x, y: custom_functions.count_flashes(x, y, frame_rate=30))
+fullFlashCountRed = ValueHistoriesToValue(lambda x, y: custom_functions.count_flashes(x, y, frame_rate=30))
 
 
 # PROCESSING PIPELINE
@@ -36,13 +39,22 @@ def processingPipeline(video_frame, register_values):
     rpc = redProportionCondition.run(rp)
     rsuc = bothConditions.run(rsu, rpc)
     rsdc = bothConditions.run(rsd, rpc)
-    register_values.add('general_flash_up', maximumRegion(rldc))
-    register_values.add('general_flash_down', maximumRegion(rllc))
-    register_values.add('red_flash_up', maximumRegion(rsuc))
-    register_values.add('red_flash_down', maximumRegion(rsdc))
-    register_values.add('general_flash_count', full_flash_count(register_values.get('general_flash_up'), register_values.get('general_flash_down')))
-    register_values.add('red_flash_count', full_flash_count(register_values.get('red_flash_up'), register_values.get('red_flash_down')))
+
+    gfu = maximumRegion.run(rldc)
+    gfd = maximumRegion.run(rllc)
+    rfu = maximumRegion.run(rsuc)
+    rfd = maximumRegion.run(rsdc)
+    gfc = fullFlashCountGeneral.run(gfu, gfd)
+    rfc = fullFlashCountRed.run(rfu, rfd)
+
+    # register_values.add('general_flash_up', maximumRegion(rldc))
+    # register_values.add('general_flash_down', maximumRegion(rllc))
+    # register_values.add('red_flash_up', maximumRegion(rsuc))
+    # register_values.add('red_flash_down', maximumRegion(rsdc))
+    # register_values.add('general_flash_count', fullFlashCount(register_values.get('general_flash_up'), register_values.get('general_flash_down')))
+    # register_values.add('red_flash_count', fullFlashCount(register_values.get('red_flash_up'), register_values.get('red_flash_down')))
 
 
 w3c_guideline = Guideline(processingPipeline)
+w3c_guideline.set_physical_display((1024, 768))
 w3c_guideline.analyse('C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video.avi')
