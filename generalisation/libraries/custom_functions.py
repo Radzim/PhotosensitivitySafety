@@ -2,9 +2,9 @@ import numpy as np
 import re
 
 
-def area_averages_max(flash_matrix, fragment_shape=(75, 100), threshold=None):
+def area_averages_max(flash_matrix, fragment_shape=(0.33, 0.33), threshold=None):
     m_y, m_x = flash_matrix.shape
-    f_y, f_x = fragment_shape
+    f_y, f_x = int(fragment_shape[0]*m_y), int(fragment_shape[1]*m_x)
     horizontal_sum = np.cumsum(flash_matrix, axis=0)
     rectangular_sum = np.cumsum(horizontal_sum, axis=1)
     big_rectangle = rectangular_sum[f_y - 1:m_y, f_x - 1:m_x]

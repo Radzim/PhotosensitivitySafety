@@ -31,3 +31,15 @@ def colorProportion(red=0, green=0, blue=0):
 
 def twoConditions(logic=np.logical_and):
     return ArraysToArray(lambda Array1, Array2: logic(Array1, Array2), vector_form=True)
+
+
+# NOT IN W3C
+def colorValue(red=0, green=0, blue=0):
+    return ArrayToArrayChannels(lambda R, G, B: red*R + green*G + blue*B, vector_form=True)
+
+
+def threshold(threshold, direction=1):
+    if direction == 1:
+        return ArrayToArray(lambda Array: np.where(Array >= threshold, 1, 0), vector_form=True)
+    if direction == -1:
+        return ArrayToArray(lambda Array: np.where(Array <= threshold, 1, 0), vector_form=True)

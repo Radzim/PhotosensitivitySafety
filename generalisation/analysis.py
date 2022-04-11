@@ -1,45 +1,72 @@
 import numpy as np
 from cv2 import cv2
 import math
-from GitHub.generalisation.libraries import register
+from GitHub.generalisation import register
 
 
-class Guideline:
-    def __init__(self, pipeline):
+class GuidelineProcess:
+    def __init__(self, objects, pipeline):
+        self.objects = objects
         self.pipeline = pipeline
-        self.display_function = render_onto_display
+
         self.display_properties = {
-            'display_size': (1024, 768),
-            'ten_degree_field': (341, 256),
-            'fine_exception_speedup': 0.3
+            'frame_rate': 30,
+            'analysis_size': (341, 256),
+            'one_degree_field': (0.033, 0.033),
+            'ten_degree_field': (0.33, 0.33)
         }
+        self.display_function = lambda frame: render_onto_display(frame, display_size=self.display_properties['analysis_size'])
 
     def set_physical_display(self, display_size, display_diameter_cm=None, display_distance_cm=None):
         if display_diameter_cm is not None and display_distance_cm is not None:
-            pixels_per_cm = (self.display_properties['display_size'][0]**2+self.display_properties['display_size'][1]**2)**0.5/display_diameter_cm
-            tenth_degree_field = math.sin(math.pi/1800)*display_distance_cm*pixels_per_cm
-            ten_degrees_field = math.sin(math.pi/18)*display_distance_cm*pixels_per_cm
-            self.display_properties['ten_degree_field'] = (ten_degrees_field, ten_degrees_field)
-            self.display_properties['fine_exception_speedup'] = 1/tenth_degree_field
-        self.display_properties['display_size'] = display_size
-        self.display_function = lambda frame: render_onto_display(frame, self.display_properties['display_size'])
+            pixels_per_cm = (display_size[0]**2+display_size[1]**2)**0.5/display_diameter_cm
+            one_degree_pixels = math.sin(math.pi/180)*display_distance_cm*pixels_per_cm
+            self.display_properties['one_degree_field'] = (10*one_degree_pixels/display_size[0], 10*one_degree_pixels/display_size[1])
+        # self.display_properties['analysis_size'] = (int(display_size[0] / (self.display_properties['one_degree_field'][0]/10)), int(display_size[1] / (self.display_properties['one_degree_field'][1]/10)))
+        self.display_function = lambda frame: render_onto_display(frame, display_size=self.display_properties['analysis_size'])
 
     def analyse(self, path):
         capture = cv2.VideoCapture(path)
-        analysis_properties = {
-            'frame_rate': capture.get(cv2.CAP_PROP_FPS),
-        }
-        values = register.Register()
+        self.display_properties['frame_rate'] = int(capture.get(cv2.CAP_PROP_FPS))
+        objects_with_properties = self.objects(self.display_properties)
+        value_register = register.Register()
         while True:
             check, frame = capture.read()
             if not check:
                 break
+            # FRAME PROCESSING
             frame = self.display_function(frame)
-            frame = cv2.resize(frame, None, fx=self.display_properties['fine_exception_speedup'], fy=self.display_properties['fine_exception_speedup'])
             display_content(frame, max_value=255)
-            self.pipeline(frame, values)
-        values.plot()
-        return values.values
+            # PIPELINE
+            values = [frame]
+            for (fun, xs, *_) in self.pipeline:
+                values.append(objects_with_properties[fun].run(*[values[x] for x in xs] if type(xs) is tuple else [values[xs]]))
+            # CHART VALUES
+            for i in range(len(self.pipeline)):
+                if len(self.pipeline[i]) > 2:
+                    value_register.add(self.pipeline[i][2], values[i+1])
+            value_register.live_plot()
+        value_register.plot()
+        return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def render_onto_display(frame, display_size=(1024, 768), size=None, position=(0, 0), interpolation=cv2.INTER_LINEAR):
