@@ -1,4 +1,4 @@
-from GitHub.PhotosensitivitySafetyEngine.engine.function_type_objects import *
+from GitHub.PhotosensitivitySafetyEngine.libraries.function_objects import *
 import numpy as np
 
 
@@ -18,7 +18,6 @@ def changeDetect(direction=1, minimum=0):
     return ArrayAndPastToArray(lambda Present, Past: np.where(direction*(Present - Past) >= minimum, 1, 0), vector_form=True)
 
 
-# not that common
 def pastOrPresentThreshold(threshold, direction=1):
     if direction == 1:
         return ArrayAndPastToArray(lambda Present, Past: np.where(np.maximum(Present, Past) >= threshold, 1, 0), vector_form=True)
@@ -27,7 +26,7 @@ def pastOrPresentThreshold(threshold, direction=1):
 
 
 def colorProportion(red=0, green=0, blue=0):
-    return ArrayToArrayChannels(lambda R, G, B: np.divide(red*R + green*G + blue*B, (R + G + B), out=np.zeros(R.shape, dtype=float), where=R != 0), vector_form=True)
+    return ArrayToArrayChannels(lambda R, G, B: np.divide(red*R + green*G + blue*B, (R + G + B), out=np.zeros(R.shape, dtype=float), where=(R + G + B) != 0), vector_form=True)
 
 
 def twoConditions(logic=np.logical_and):

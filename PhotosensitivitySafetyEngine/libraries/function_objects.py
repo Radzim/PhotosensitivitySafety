@@ -77,6 +77,25 @@ class ValueToValue:
         return self.fun(value)
 
 
+class ValuesToValue:
+    def __init__(self, fun):
+        self.fun = fun
+
+    def run(self, value1, value2):
+        return self.fun(value1, value2)
+
+
+class ValueAndPastToValue:
+    def __init__(self, fun):
+        self.fun = fun
+        self.past = 0
+
+    def run(self, array):
+        ret = self.fun(array, self.past)
+        self.past = array
+        return ret
+
+
 class ValueHistoryToValue:
     def __init__(self, fun):
         self.fun = fun

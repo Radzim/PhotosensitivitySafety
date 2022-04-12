@@ -3,7 +3,7 @@ import time
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from GitHub.PhotosensitivitySafetyEngine.engine.function_type_objects import *
+from GitHub.PhotosensitivitySafetyEngine.libraries.function_objects import *
 from GitHub.PhotosensitivitySafetyEngine.libraries import common_functions as functions, custom_functions
 
 

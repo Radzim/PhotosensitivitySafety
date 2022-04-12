@@ -1,5 +1,5 @@
 from GitHub.PhotosensitivitySafetyEngine.engine.analysis import GuidelineProcess, Display
-from GitHub.PhotosensitivitySafetyEngine.engine.function_type_objects import *
+from GitHub.PhotosensitivitySafetyEngine.libraries.function_objects import *
 from GitHub.PhotosensitivitySafetyEngine.libraries import common_functions
 import numpy as np
 
@@ -12,8 +12,9 @@ function_objects = lambda properties: {
     'proportionThreshold': common_functions.threshold(0.5),
     'greenFrameFragments': common_functions.twoConditions(),
     'greenFrameProportion': ArrayToValue(lambda x: np.average(x)),
-    'greenFrameAlert': ValueToValue(lambda x: x>0.03),
-    'countGreenFrames': ValueHistoryToValue(lambda x: sum(x))
+    'greenFrameAlert': ValueToValue(lambda x: x > 0.03),
+    'countGreenFrames': ValueHistoryToValue(lambda x: sum(x)),
+    'threshold': ValueToValue(lambda x: x > 10)
 }
 
 # PROCESSING PIPELINE
@@ -26,10 +27,12 @@ processing_pipeline = [
     ('greenFrameFragments', (4, 5)),
     ('greenFrameProportion', 6, "Green%"),
     ('greenFrameAlert', 7, "Too Green"),
-    ('countGreenFrames', 8, "Total Too Green Frames")
+    ('countGreenFrames', 8, "Total Too Green Frames"),
+    ('threshold', 9, "Fail")
+
 ]
 
 # GUIDELINE OBJECT CREATION
-w3c_guideline = GuidelineProcess(function_objects, processing_pipeline)
+green_guideline = GuidelineProcess(function_objects, processing_pipeline)
 display_properties = Display(display_resolution=(1024, 768), display_diameter=16, display_distance=24)
-w3c_guideline.analyse('C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video.avi', display_properties, speedup=5)
+green_guideline.analyse('C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video.avi', display_properties, speedup=5, show_live_analysis=False, show_live_chart=False)

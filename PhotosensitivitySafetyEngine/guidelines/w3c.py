@@ -1,5 +1,5 @@
 from GitHub.PhotosensitivitySafetyEngine.engine.analysis import GuidelineProcess, Display
-from GitHub.PhotosensitivitySafetyEngine.engine.function_type_objects import *
+from GitHub.PhotosensitivitySafetyEngine.libraries.function_objects import *
 from GitHub.PhotosensitivitySafetyEngine.libraries import common_functions, custom_functions
 import numpy as np
 
@@ -18,7 +18,8 @@ function_objects = lambda properties: {
     'redSaturation': ArrayToArrayChannels(lambda R, G, B: np.maximum(R - G - B, 0) * 320, vector_form=True),
     'maximumRegion': ArrayToValue(lambda x: custom_functions.area_averages_max(x, fragment_shape=properties['degree_field'](10), threshold=0.25)),
     'fullFlashCountGeneral': ValueHistoriesToValue(lambda x, y: custom_functions.count_flashes(x, y, frame_rate=properties['frame_rate'])),
-    'fullFlashCountRed': ValueHistoriesToValue(lambda x, y: custom_functions.count_flashes(x, y, frame_rate=properties['frame_rate']))
+    'fullFlashCountRed': ValueHistoriesToValue(lambda x, y: custom_functions.count_flashes(x, y, frame_rate=properties['frame_rate'])),
+    'eitherThreshold': ValuesToValue(lambda x, y: x > 3 or y > 3)
 }
 
 # PROCESSING PIPELINE
@@ -42,10 +43,12 @@ processing_pipeline = [
     ('maximumRegion', 13),
     ('maximumRegion', 14),
     ('fullFlashCountGeneral', (15, 16), "General Flashes"),
-    ('fullFlashCountRed', (17, 18), "Red Flashes")
+    ('fullFlashCountRed', (17, 18), "Red Flashes"),
+    ('eitherThreshold', (19, 20), "Fail")
 ]
 
 # GUIDELINE OBJECT CREATION
 w3c_guideline = GuidelineProcess(function_objects, processing_pipeline)
+# TODO: SOME MAX REGION BUGS WHEN DISPLAY IS VERY LONG
 display_properties = Display(display_resolution=(1024, 768), display_diameter=16, display_distance=24)
-w3c_guideline.analyse('C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video.avi', display_properties, speedup=10)
+w3c_guideline.analyse('C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video.avi', display_properties, speedup=3, show_live_analysis=False, show_live_chart=False)
