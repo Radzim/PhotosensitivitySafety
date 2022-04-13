@@ -1,4 +1,4 @@
-from GitHub.PhotosensitivitySafetyEngine.libraries.function_objects import *
+from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.libraries.function_objects import *
 import numpy as np
 
 

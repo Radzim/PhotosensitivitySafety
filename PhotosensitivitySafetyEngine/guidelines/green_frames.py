@@ -1,6 +1,6 @@
-from GitHub.PhotosensitivitySafetyEngine.engine.analysis import GuidelineProcess, Display
-from GitHub.PhotosensitivitySafetyEngine.libraries.function_objects import *
-from GitHub.PhotosensitivitySafetyEngine.libraries import common_functions
+from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.engine.analysis import GuidelineProcess, Display
+from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.libraries.function_objects import *
+from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.libraries import common_functions
 import numpy as np
 
 # FUNCTION OBJECTS

@@ -3,8 +3,8 @@ import time
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from GitHub.PhotosensitivitySafetyEngine.libraries.function_objects import *
-from GitHub.PhotosensitivitySafetyEngine.libraries import common_functions as functions, custom_functions
+from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.libraries.function_objects import *
+from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.libraries import common_functions as functions, custom_functions
 
 
 import re

@@ -1,7 +1,7 @@
-from GitHub.PhotosensitivitySafetyEngine.engine.analysis import GuidelineProcess, Display
-from GitHub.PhotosensitivitySafetyEngine.libraries.function_objects import *
-from GitHub.PhotosensitivitySafetyEngine.libraries import common_functions, custom_functions
-from GitHub.PhotosensitivitySafetyEngine.video_tools.video_censor import *
+from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.engine.analysis import GuidelineProcess, Display
+from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.libraries.function_objects import *
+from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.libraries import common_functions, custom_functions
+from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.video_tools.video_censor import *
 import numpy as np
 
 # FUNCTION OBJECTS
