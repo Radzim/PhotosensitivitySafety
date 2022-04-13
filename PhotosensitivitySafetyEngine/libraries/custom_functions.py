@@ -3,6 +3,7 @@ import re
 
 
 def area_averages_max(flash_matrix, fragment_shape=(0.33, 0.33), threshold=None):
+    fragment_shape = [min(x, 1) for x in fragment_shape]
     m_y, m_x = flash_matrix.shape
     f_y, f_x = int(fragment_shape[0]*m_y), int(fragment_shape[1]*m_x)
     horizontal_sum = np.cumsum(flash_matrix, axis=0)

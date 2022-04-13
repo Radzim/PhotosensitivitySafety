@@ -2,7 +2,7 @@ from cv2 import cv2
 
 address = 'C:/Users/radzi/OneDrive/Desktop/II/Project/Media/powerpoint2.mp4'
 name = address.replace('/', '.').split('.')[-2]
-
+z
 capture = cv2.VideoCapture(address)
 
 check, frame = capture.read()

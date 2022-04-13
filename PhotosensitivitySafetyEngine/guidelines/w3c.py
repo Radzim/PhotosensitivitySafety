@@ -1,9 +1,11 @@
 from GitHub.PhotosensitivitySafetyEngine.engine.analysis import GuidelineProcess, Display
 from GitHub.PhotosensitivitySafetyEngine.libraries.function_objects import *
 from GitHub.PhotosensitivitySafetyEngine.libraries import common_functions, custom_functions
+from GitHub.PhotosensitivitySafetyEngine.video_tools.video_censor import *
 import numpy as np
 
 # FUNCTION OBJECTS
+
 function_objects = lambda properties: {
     'colorCurve': common_functions.colorCurve('RGB2XYZ'),
     'relativeLuminance': common_functions.relativeLuminance(),
@@ -49,6 +51,14 @@ processing_pipeline = [
 
 # GUIDELINE OBJECT CREATION
 w3c_guideline = GuidelineProcess(function_objects, processing_pipeline)
-# TODO: SOME MAX REGION BUGS WHEN DISPLAY IS VERY LONG
-display_properties = Display(display_resolution=(1024, 768), display_diameter=16, display_distance=24)
-w3c_guideline.analyse('C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video.avi', display_properties, speedup=3, show_live_analysis=False, show_live_chart=False)
+
+# display = Display(display_resolution=(1024, 768), display_diameter=16, display_distance=24)
+#
+# path = 'C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video.avi'
+# result, breaches = w3c_guideline.analyse_file(path, display=display, speedup=3, show_live_analysis=False, show_live_chart=False)
+# print(result)
+# video_censor(path, breaches, fallback_frames=6, frames_before=30)
+#
+# path = 'C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video_censored.avi'
+# result, _ = w3c_guideline.analyse_file(path, display=display, speedup=3, show_live_analysis=False, show_live_chart=False)
+# print(result)

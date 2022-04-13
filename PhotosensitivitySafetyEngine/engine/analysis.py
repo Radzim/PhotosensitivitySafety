@@ -3,15 +3,17 @@ import time
 import numpy as np
 from cv2 import cv2
 from matplotlib import pyplot as plt
+from threading import Thread
+from mss import mss
 
 
-# TODO: ADD SCREEN CAPTURE OPTION
 class GuidelineProcess:
     def __init__(self, objects, pipeline):
         self.objects = objects
         self.pipeline = pipeline
 
-    def analyse(self, path, display=None, speedup=1, show_live_chart=True, show_live_analysis=True):
+    def analyse_file(self, path, display=None, speedup=1, show_live_chart=True, show_live_analysis=True):
+        # INITIALISATION CODE
         timer = Timer()
         if display is None:
             display = Display()
@@ -52,7 +54,65 @@ class GuidelineProcess:
         value_register.plot()
         timer.plot()
         plt.show()
-        return sum(value_register.get('Fail')) == 0
+        return sum(value_register.get('Fail')) == 0, value_register.get('Fail')
+
+    def analyse_live(self, _, display=None, speedup=1, show_live_chart=True, show_live_analysis=True):
+        def threaded_grab(img, fresh, kill_switch):
+            sct = mss()
+            monitor = sct.monitors[1]
+            while kill_switch[0]:
+                img[0] = sct.grab(monitor)
+                fresh[0] = True
+        # THREADING CODE
+        sct_img, sct_fresh, kill_switch = [np.array(0)], [False], [True]
+        thread = Thread(target=threaded_grab, args=(sct_img, sct_fresh, kill_switch))
+        thread.start()
+        while not sct_fresh[0]:
+            pass
+        # INITIALISATION CODE
+        timer = Timer()
+        if display is None:
+            display = Display()
+        display.set_property('frame_rate', 30)
+        display.set_property('display_resolution', (np.shape(np.array(sct_img[0]))[1], np.shape(np.array(sct_img[0]))[0]))
+        display.set_property('analysis_resolution', tuple([int(x / speedup) for x in display.get_property('display_resolution')]))
+        objects_with_properties = self.objects(display.properties())
+        value_register = Register()
+        timer.time('overhead')
+        for i in range(100):
+            while not sct_fresh:
+                pass
+            frame = np.array(sct_img[0])[:, :, :3]
+            sct_fresh[0] = False
+            timer.time('capture')
+            # PIPELINE
+            values = [cv2.resize(frame, display.get_property('analysis_resolution'))]
+            timer.time('frame resize')
+            for (fun, xs, *_) in self.pipeline:
+                values.append(objects_with_properties[fun].run(*[values[x] for x in xs] if type(xs) is tuple else [values[xs]]))
+                timer.time(fun + str(xs))
+            # CHART VALUES
+            value_register.add_all(self.pipeline, values)
+            if show_live_chart:
+                value_register.live_plot()
+                timer.time('live plotting')
+            if show_live_analysis:
+                frames = [cv2.cvtColor(np.float32(a/np.amax(a, initial=1)), cv2.COLOR_GRAY2BGR) if a.ndim == 2 else a/np.amax(a, initial=1) for a in [x for x in values if isinstance(x, np.ndarray)]]
+                frames.extend([np.zeros_like(frames[0])]*(math.ceil(math.sqrt(len(frames)))**2 - len(frames)))
+                cv2.imshow('Analysis', np.vstack([np.hstack(f) for f in np.array_split(frames, math.sqrt(len(frames)))])), cv2.waitKey(1)
+                timer.time('analysis matrix')
+            else:
+                # cv2.imshow('Video', values[0]), cv2.waitKey(1)
+                timer.time('analysis video')
+            print('', end=f'\r{time.time()}')
+        kill_switch[0] = False
+        print('\n', value_register.get('Fail'))
+        cv2.destroyAllWindows()
+        timer.time('overhead')
+        value_register.plot()
+        timer.plot()
+        plt.show()
+        return sum(value_register.get('Fail')) == 0, value_register.get('Fail')
 
 
 class Display:
