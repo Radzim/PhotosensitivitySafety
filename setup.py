@@ -8,5 +8,5 @@ setup(
     author='Radzim Sendyka',
     author_email='radzimsendyka@gmail.com',
 
-    py_modules=['PhotosensitivitySafetyEngine'],
+    packages=['PhotosensitivitySafetyEngine'],
 )
