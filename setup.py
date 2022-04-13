@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name='photosensitivity_safety',
+    name='photosensitivitysafety',
     version=1,
 
     url='https://github.com/Radzim/PhotosensitivitySafety',
