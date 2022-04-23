@@ -18,7 +18,7 @@ function_objects = lambda properties: {
     'redProportion': common_functions.colorProportion(red=1),
     'bothConditions': common_functions.twoConditions(),
     'redSaturation': ArrayToArrayChannels(lambda R, G, B: np.maximum(R - G - B, 0) * 320, vector_form=True),
-    'maximumRegion': ArrayToValue(lambda x: custom_functions.area_averages_max(x, fragment_shape=properties['degree_field'](10), threshold=0.25)),
+    'maximumRegion': ArrayToValue(lambda x: custom_functions.area_averages_max(x, fragment_shape=(1/3, 1/3), threshold=0.25)),
     'fullFlashCountGeneral': ValueHistoriesToValue(lambda x, y: custom_functions.count_flashes(x, y, frame_rate=properties['frame_rate'])),
     'fullFlashCountRed': ValueHistoriesToValue(lambda x, y: custom_functions.count_flashes(x, y, frame_rate=properties['frame_rate'])),
     'eitherThreshold': ValuesToValue(lambda x, y: x > 3 or y > 3)
@@ -52,13 +52,12 @@ processing_pipeline = [
 # GUIDELINE OBJECT CREATION
 w3c_guideline = GuidelineProcess(function_objects, processing_pipeline)
 
-display = Display(display_resolution=(1024, 768), display_diameter=16, display_distance=24)
-
-path = 'C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video.avi'
-result, breaches = w3c_guideline.analyse_file(path, display=display, speedup=3, show_live_analysis=False, show_live_chart=False)
+# display = Display(display_resolution=(1024, 768), display_diameter=16, display_distance=24)
+path = 'C:/Users/radzi/OneDrive/Desktop/II/Project/Documents/Vulnerabilities/VU/peat.avi'
+result, breaches = w3c_guideline.analyse_file(path, speedup=3, show_live_analysis=True, show_live_chart=True)
 print(result)
-video_censor(path, breaches, fallback_frames=6, frames_before=30)
-
-path = 'C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video_censored.avi'
-result, _ = w3c_guideline.analyse_file(path, display=display, speedup=3, show_live_analysis=False, show_live_chart=False)
-print(result)
+# video_censor(path, breaches, fallback_frames=6, frames_before=30)
+#
+# path = 'C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video_censored.avi'
+# result, _ = w3c_guideline.analyse_file(path, display=display, speedup=3, show_live_analysis=False, show_live_chart=False)
+# print(result)

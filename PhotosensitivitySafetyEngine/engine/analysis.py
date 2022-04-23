@@ -116,7 +116,7 @@ class GuidelineProcess:
 
 
 class Display:
-    def __init__(self, display_resolution=(1024, 768), display_diameter=16, display_distance=24):
+    def __init__(self, display_resolution=(1024, 768), display_diameter=16, display_distance=24, candelas=200):
         display_size = tuple([display_diameter * x1 / sum([x2 ** 2 for x2 in display_resolution]) ** 0.5 for x1 in display_resolution])
         degree_field = lambda a: tuple([math.sin(a * math.pi / 180) * display_distance / x for x in display_size])
         self.data = {
@@ -126,7 +126,8 @@ class Display:
             'display_distance': display_distance,
             'display_size': display_size,
             'degree_field': degree_field,
-            'frame_rate': 30
+            'frame_rate': 30,
+            'candelas': candelas
         }
 
     def set_property(self, name, value):
