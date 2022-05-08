@@ -1,3 +1,5 @@
+import time
+
 from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.engine.analysis import GuidelineProcess, Display
 from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.libraries.function_objects import *
 from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.libraries import common_functions, custom_functions
@@ -17,7 +19,7 @@ function_objects = lambda properties: {
     'redProportionCondition': common_functions.pastOrPresentThreshold(0.8, direction=1),
     'redProportion': common_functions.colorProportion(red=1),
     'bothConditions': common_functions.twoConditions(),
-    'redSaturation': ArrayToArrayChannels(lambda R, G, B: np.maximum(R - G - B, 0) * 320, vector_form=True),
+    'redSaturation': ArrayChannelsToArray(lambda R, G, B: np.maximum(R - G - B, 0) * 320, vector_form=True),
     'maximumRegion': ArrayToValue(lambda x: custom_functions.area_averages_max(x, fragment_shape=(1/3, 1/3), threshold=0.25)),
     'fullFlashCountGeneral': ValueHistoriesToValue(lambda x, y: custom_functions.count_flashes(x, y, frame_rate=properties['frame_rate'])),
     'fullFlashCountRed': ValueHistoriesToValue(lambda x, y: custom_functions.count_flashes(x, y, frame_rate=properties['frame_rate'])),
@@ -52,12 +54,29 @@ processing_pipeline = [
 # GUIDELINE OBJECT CREATION
 w3c_guideline = GuidelineProcess(function_objects, processing_pipeline)
 
+
 # display = Display(display_resolution=(1024, 768), display_diameter=16, display_distance=24)
-path = 'C:/Users/radzi/OneDrive/Desktop/II/Project/Documents/Vulnerabilities/VU/peat.avi'
-result, breaches = w3c_guideline.analyse_file(path, speedup=3, show_live_analysis=True, show_live_chart=True)
-print(result)
+# path = 'C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video.avi'
+# result, breaches = w3c_guideline.analyse_file(path, speedup=3, show_live_analysis=True, show_live_chart=True)
+# result, breaches = w3c_guideline.analyse_file(path, speedup=3, show_live_analysis=False, show_live_chart=False)
+# result, breaches = w3c_guideline.analyse_live(speedup=10, show_live_analysis=True, show_live_chart=True)
+# print(result)
 # video_censor(path, breaches, fallback_frames=6, frames_before=30)
 #
 # path = 'C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video_censored.avi'
 # result, _ = w3c_guideline.analyse_file(path, display=display, speedup=3, show_live_analysis=False, show_live_chart=False)
 # print(result)
+
+# w3c_guideline.analyse_live(speedup=3, show_live_analysis=False, show_live_chart=False)
+
+# import glob
+# files = glob.glob("C:/Users/radzi/OneDrive/Desktop/II/Project/TestVideos/peat_small/*")
+# print(files)
+# files.append(files[0])
+# for file in files:
+#     start = time.time()
+#     result, breaches = w3c_guideline.analyse_file(file, speedup=1, show_live_analysis=False, show_live_chart=False)
+#     print(time.time() - start)
+
+for i in range(5):
+    result, breaches = w3c_guideline.analyse_live(show_live_analysis=False, show_live_chart=False)

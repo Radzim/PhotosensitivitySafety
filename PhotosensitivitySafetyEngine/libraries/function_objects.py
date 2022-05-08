@@ -2,6 +2,7 @@ from cv2 import cv2
 import numpy as np
 
 
+# ARRAY to ARRAY
 class InputToArray:
     def __init__(self, fun, lut=np.arange(256), vector_form=False):
         if vector_form:
@@ -24,7 +25,7 @@ class ArrayToArray:
         return self.fun(array)
 
 
-class ArrayToArrayChannels:
+class ArrayChannelsToArray:
     def __init__(self, fun, vector_form=False):
         if vector_form:
             self.fun = fun
@@ -61,6 +62,7 @@ class ArrayAndPastToArray:
         return ret
 
 
+# ARRAY to VALUE
 class ArrayToValue:
     def __init__(self, fun):
         self.fun = fun
@@ -69,6 +71,35 @@ class ArrayToValue:
         return self.fun(array)
 
 
+class ArrayChannelsToValue:
+    def __init__(self, fun):
+        self.fun = fun
+
+    def run(self, array):
+        b, g, r = cv2.split(array)
+        return self.fun(r, g, b)
+
+
+class ArraysToValue:
+    def __init__(self, fun):
+        self.fun = fun
+
+    def run(self, array1, array2):
+        return self.fun(array1, array2)
+
+
+class ArrayAndPastToValue:
+    def __init__(self, fun):
+        self.fun = fun
+        self.past = 0
+
+    def run(self, array):
+        ret = self.fun(array, self.past)
+        self.past = array
+        return ret
+
+
+# VALUE to VALUE
 class ValueToValue:
     def __init__(self, fun):
         self.fun = fun

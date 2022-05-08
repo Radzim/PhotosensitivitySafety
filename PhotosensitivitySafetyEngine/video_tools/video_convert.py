@@ -9,7 +9,7 @@ def convert_to_peat(address_in):
     address_out = os.path.splitext(address_in)[0]+'_peat.avi'
     writer = cv2.VideoWriter(address_out, 0, 30, (1024, 768))
     capture = cv2.VideoCapture(address_in)
-    while True:
+    for i in range(900):
         check, frame = capture.read()
         if not check:
             break
@@ -29,6 +29,3 @@ def images_to_peat(address_in):
         frame2 = cv2.resize(frame, (1024, 768))
         writer.write(frame2)
     writer.release()
-
-
-images_to_peat('C:/Users/radzi/OneDrive/Desktop/II/Project/Documents/Vulnerabilities/VU')

@@ -24,6 +24,7 @@ def count_flashes(flashes_lighter, flashes_darker, frame_rate=30):
     flashes_lighter[0], flashes_darker[0] = 0, 0
     channel1, channel2 = flashes_lighter[-(frame_rate - 1):], flashes_darker[-(frame_rate - 1):]
     both_channels = ''
+    # "X" is both, "1" is "up", "2" is "down"
     for i in range(len(channel1)):
         if channel1[i] and channel2[i]:
             both_channels += 'X'

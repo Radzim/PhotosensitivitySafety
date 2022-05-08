@@ -5,6 +5,7 @@ from cv2 import cv2
 from matplotlib import pyplot as plt
 from threading import Thread
 from mss import mss
+import keyboard
 
 
 class GuidelineProcess:
@@ -12,7 +13,7 @@ class GuidelineProcess:
         self.objects = objects
         self.pipeline = pipeline
 
-    def analyse_file(self, path, display=None, speedup=1, show_live_chart=True, show_live_analysis=True):
+    def analyse_file(self, path, display=None, speedup=3, show_live_chart=True, show_live_analysis=True):
         # INITIALISATION CODE
         timer = Timer()
         if display is None:
@@ -24,6 +25,8 @@ class GuidelineProcess:
         value_register = Register()
         timer.time('overhead')
         while True:
+            if keyboard.is_pressed("q"):
+                break
             check, frame = capture.read()
             if not check:
                 break
@@ -44,23 +47,22 @@ class GuidelineProcess:
                 frames.extend([np.zeros_like(frames[0])]*(math.ceil(math.sqrt(len(frames)))**2 - len(frames)))
                 cv2.imshow('Analysis', np.vstack([np.hstack(f) for f in np.array_split(frames, math.sqrt(len(frames)))])), cv2.waitKey(1)
                 timer.time('analysis matrix')
-            else:
-                cv2.imshow('Video', values[0]), cv2.waitKey(1)
-                timer.time('analysis video')
-            print('', end=f'\r{int(capture.get(cv2.CAP_PROP_POS_FRAMES))}/{int(capture.get(cv2.CAP_PROP_FRAME_COUNT))}')
-        print('\n', value_register.get('Fail'))
+            # else:
+            #     cv2.imshow('Video', values[0]), cv2.waitKey(1)
+            #     timer.time('analysis video')
+            # print('', end=f'\r{int(capture.get(cv2.CAP_PROP_POS_FRAMES))}/{int(capture.get(cv2.CAP_PROP_FRAME_COUNT))}')
         cv2.destroyAllWindows()
         timer.time('overhead')
-        value_register.plot()
-        timer.plot()
-        plt.show()
+        # value_register.plot()
+        # timer.plot()
+        # plt.show()
         return sum(value_register.get('Fail')) == 0, value_register.get('Fail')
 
-    def analyse_live(self, _, display=None, speedup=1, show_live_chart=True, show_live_analysis=True):
-        def threaded_grab(img, fresh, kill_switch):
+    def analyse_live(self, display=None, speedup=3, show_live_chart=True, show_live_analysis=True):
+        def threaded_grab(img, fresh, kill):
             sct = mss()
             monitor = sct.monitors[1]
-            while kill_switch[0]:
+            while kill[0]:
                 img[0] = sct.grab(monitor)
                 fresh[0] = True
         # THREADING CODE
@@ -75,12 +77,20 @@ class GuidelineProcess:
             display = Display()
         display.set_property('frame_rate', 30)
         display.set_property('display_resolution', (np.shape(np.array(sct_img[0]))[1], np.shape(np.array(sct_img[0]))[0]))
-        display.set_property('analysis_resolution', tuple([int(x / speedup) for x in display.get_property('display_resolution')]))
+        display.set_property('analysis_resolution', (341, 256))
+        # display.set_property('analysis_resolution', tuple([int(x / speedup) for x in display.get_property('display_resolution')]))
         objects_with_properties = self.objects(display.properties())
         value_register = Register()
         timer.time('overhead')
-        for i in range(100):
+        start = time.time()
+        num = 0
+        while time.time()-start < 10:
+            num+=1
+            if keyboard.is_pressed("q"):
+                break
             while not sct_fresh:
+                if keyboard.is_pressed("q"):
+                    break
                 pass
             frame = np.array(sct_img[0])[:, :, :3]
             sct_fresh[0] = False
@@ -105,18 +115,18 @@ class GuidelineProcess:
                 # cv2.imshow('Video', values[0]), cv2.waitKey(1)
                 timer.time('analysis video')
             print('', end=f'\r{time.time()}')
+        print('\n\n', num)
         kill_switch[0] = False
-        print('\n', value_register.get('Fail'))
         cv2.destroyAllWindows()
         timer.time('overhead')
-        value_register.plot()
-        timer.plot()
+        # value_register.plot()
+        # timer.plot()
         plt.show()
         return sum(value_register.get('Fail')) == 0, value_register.get('Fail')
 
 
 class Display:
-    def __init__(self, display_resolution=(1024, 768), display_diameter=16, display_distance=24, candelas=200):
+    def __init__(self, display_resolution=(1024, 768), display_diameter=16, display_distance=24, nits=200):
         display_size = tuple([display_diameter * x1 / sum([x2 ** 2 for x2 in display_resolution]) ** 0.5 for x1 in display_resolution])
         degree_field = lambda a: tuple([math.sin(a * math.pi / 180) * display_distance / x for x in display_size])
         self.data = {
@@ -127,7 +137,7 @@ class Display:
             'display_size': display_size,
             'degree_field': degree_field,
             'frame_rate': 30,
-            'candelas': candelas
+            'candelas': nits
         }
 
     def set_property(self, name, value):

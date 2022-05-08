@@ -11,7 +11,11 @@ def colorCurve(curve):
 
 
 def relativeLuminance():
-    return ArrayToArrayChannels(lambda R, G, B: 0.2126 * R + 0.7152 * G + 0.0722 * B, vector_form=True)
+    return ArrayChannelsToArray(lambda R, G, B: 0.2126 * R + 0.7152 * G + 0.0722 * B, vector_form=True)
+
+
+def absoluteLuminance():
+    return ArrayChannelsToArray(lambda R, G, B: 1/3 * R + 1/3 * G + 1/3 * B, vector_form=True)
 
 
 def changeDetect(direction=1, minimum=0):
@@ -26,7 +30,7 @@ def pastOrPresentThreshold(threshold, direction=1):
 
 
 def colorProportion(red=0, green=0, blue=0):
-    return ArrayToArrayChannels(lambda R, G, B: np.divide(red*R + green*G + blue*B, (R + G + B), out=np.zeros(R.shape, dtype=float), where=(R + G + B) != 0), vector_form=True)
+    return ArrayChannelsToArray(lambda R, G, B: np.divide(red * R + green * G + blue * B, (R + G + B), out=np.zeros(R.shape, dtype=float), where=(R + G + B) != 0), vector_form=True)
 
 
 def twoConditions(logic=np.logical_and):
@@ -35,7 +39,7 @@ def twoConditions(logic=np.logical_and):
 
 # NOT IN W3C
 def colorValue(red=0, green=0, blue=0):
-    return ArrayToArrayChannels(lambda R, G, B: red*R + green*G + blue*B, vector_form=True)
+    return ArrayChannelsToArray(lambda R, G, B: red * R + green * G + blue * B, vector_form=True)
 
 
 def threshold(threshold, direction=1):
