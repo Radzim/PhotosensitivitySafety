@@ -47,9 +47,9 @@ class GuidelineProcess:
                 frames.extend([np.zeros_like(frames[0])]*(math.ceil(math.sqrt(len(frames)))**2 - len(frames)))
                 cv2.imshow('Analysis', np.vstack([np.hstack(f) for f in np.array_split(frames, math.sqrt(len(frames)))])), cv2.waitKey(1)
                 timer.time('analysis matrix')
-            # else:
-            #     cv2.imshow('Video', values[0]), cv2.waitKey(1)
-            #     timer.time('analysis video')
+            else:
+                # cv2.imshow('Video', values[0]), cv2.waitKey(1)
+                timer.time('analysis video')
             # print('', end=f'\r{int(capture.get(cv2.CAP_PROP_POS_FRAMES))}/{int(capture.get(cv2.CAP_PROP_FRAME_COUNT))}')
         cv2.destroyAllWindows()
         timer.time('overhead')
@@ -112,7 +112,7 @@ class GuidelineProcess:
                 cv2.imshow('Analysis', np.vstack([np.hstack(f) for f in np.array_split(frames, math.sqrt(len(frames)))])), cv2.waitKey(1)
                 timer.time('analysis matrix')
             else:
-                # cv2.imshow('Video', values[0]), cv2.waitKey(1)
+                cv2.imshow('Video', values[0]), cv2.waitKey(1)
                 timer.time('analysis video')
             print('', end=f'\r{time.time()}')
         print('\n\n', num)
