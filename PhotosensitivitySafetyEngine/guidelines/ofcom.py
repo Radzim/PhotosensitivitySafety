@@ -34,14 +34,7 @@ processing_pipeline = [
 
 # GUIDELINE OBJECT CREATION
 ofcom_guideline = GuidelineProcess(function_objects, processing_pipeline)
+display_properties = Display(display_resolution=(1024, 768), display_diameter=16, display_distance=24)
 
-display = Display(display_resolution=(1024, 768), display_diameter=16, display_distance=24)
-
-path = 'C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video.avi'
-result, breaches = ofcom_guideline.analyse_file(path, display=display, speedup=3, show_live_analysis=False, show_live_chart=False)
-print(result)
-video_censor(path, breaches, fallback_frames=6, frames_before=30)
-
-path = 'C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video_censored.avi'
-result, _ = ofcom_guideline.analyse_file(path, display=display, speedup=3, show_live_analysis=False, show_live_chart=False)
-print(result)
+# EXECUTION
+ofcom_guideline.analyse_file('path', display_properties, speedup=5, show_live_analysis=False, show_live_chart=False)

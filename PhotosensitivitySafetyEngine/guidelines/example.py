@@ -35,4 +35,7 @@ processing_pipeline = [
 # GUIDELINE OBJECT CREATION
 green_guideline = GuidelineProcess(function_objects, processing_pipeline)
 display_properties = Display(display_resolution=(1024, 768), display_diameter=16, display_distance=24)
-green_guideline.analyse_file('C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video.avi', display_properties, speedup=5, show_live_analysis=False, show_live_chart=False)
+
+# EXECUTION
+green_guideline.analyse_file('path', display_properties, speedup=5, show_live_analysis=False, show_live_chart=False)
+green_guideline.analyse_live('path', speedup=5, show_live_analysis=False, show_live_chart=False)

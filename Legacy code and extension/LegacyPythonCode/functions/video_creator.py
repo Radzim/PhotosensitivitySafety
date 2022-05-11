@@ -1,9 +1,9 @@
 import numpy as np
 from cv2 import cv2
 
-import functions.help_functions
+import help_functions
 
-video_name = 'C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/green_blue.avi'
+video_name = 'path'
 video = cv2.VideoWriter(video_name, 0, 30, (1024, 768))
 
 # frame1 = np.array([[(255,255,255), (0,0,0), (0,0,0), (0,0,0), (0,0,0)]*3]*4, dtype='uint8')

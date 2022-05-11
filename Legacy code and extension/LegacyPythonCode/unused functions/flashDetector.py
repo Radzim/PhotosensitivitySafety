@@ -1,5 +1,5 @@
 import pafy
-from recycle_bin.frame_functions import *
+from unused_functions.frame_functions import *
 from functions.help_functions import *
 from datetime import datetime
 import cv2.cv2 as cv2
@@ -22,10 +22,10 @@ videos = [
     ("https://www.youtube.com/watch?v=FkhfLNfWIHA", 'pafy'),  # flashing images
     ("https://www.youtube.com/watch?v=XqZsoesa55w", 'pafy'),  # baby shark
     ("https://www.youtube.com/watch?v=0EqSXDwTq6U", 'pafy'),  # charlie bit my finger
-    ('C:/Users/radzi/OneDrive/Desktop/Project/Media/Pokemon.mp4', 'local'),  # pokemon local
-    ('C:/Users/radzi/OneDrive/Desktop/Project/Media/PEAT_1.avi', 'local'),  # peat recording local
-    ('C:/Users/radzi/OneDrive/Desktop/Project/Media/video-1636024687.mp4', 'local'),  # lecture recording 1
-    ('C:/Users/radzi/OneDrive/Desktop/Project/Media/video-1636024693.mp4', 'local'),  # lecture recording 2
+    ('path', 'local'),  # pokemon local
+    ('path', 'local'),  # peat recording local
+    ('path', 'local'),  # lecture recording 1
+    ('path', 'local'),  # lecture recording 2
 ]
 video = videos[0]
 

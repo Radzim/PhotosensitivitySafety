@@ -23,7 +23,7 @@ videos = [
     ("https://www.youtube.com/watch?v=FkhfLNfWIHA", 'pafy'),  # flashing images
     ("https://www.youtube.com/watch?v=XqZsoesa55w", 'pafy'),  # baby shark
     ("https://www.youtube.com/watch?v=0EqSXDwTq6U", 'pafy'),  # charlie bit my finger
-    ('C:/Users/radzi/Videos/uTorrent/ted.lasso.s02e01.1080p.web.h264-glhf[eztv.re].mkv', 'local')  # ted lasso
+    ('path', 'local')  # ted lasso
 ]
 video = videos[videoPick]
 

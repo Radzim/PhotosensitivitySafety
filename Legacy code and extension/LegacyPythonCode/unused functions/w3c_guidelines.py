@@ -94,7 +94,7 @@ def processingPipeline(stage_0):
 # Dataframe
 df = pd.DataFrame(columns=['Lighter', 'Darker', 'More-Red', 'Less-Red'])
 
-capture = cv2.VideoCapture('C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video.avi')
+capture = cv2.VideoCapture('path')
 print(time.time())
 for i in range(333):
     print(i)
