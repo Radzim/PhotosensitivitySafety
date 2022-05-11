@@ -21,6 +21,7 @@ class GuidelineProcess:
         capture = cv2.VideoCapture(path)
         display.set_property('frame_rate', int(capture.get(cv2.CAP_PROP_FPS)))
         display.set_property('analysis_resolution', tuple([int(x / speedup) for x in display.get_property('display_resolution')]))
+        print(tuple([int(x / speedup) for x in display.get_property('display_resolution')]))
         objects_with_properties = self.objects(display.properties())
         value_register = Register()
         timer.time('overhead')

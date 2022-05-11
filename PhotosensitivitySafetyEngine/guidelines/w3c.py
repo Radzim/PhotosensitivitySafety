@@ -1,9 +1,6 @@
-import time
-
 from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.engine.analysis import GuidelineProcess, Display
 from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.libraries.function_objects import *
 from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.libraries import common_functions, custom_functions
-from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.video_tools.video_censor import *
 import numpy as np
 
 # FUNCTION OBJECTS
@@ -53,33 +50,7 @@ processing_pipeline = [
 
 # GUIDELINE OBJECT CREATION
 w3c_guideline = GuidelineProcess(function_objects, processing_pipeline)
+display = Display(display_resolution=(1024, 768), display_diameter=16, display_distance=24)
 
-
-# display = Display(display_resolution=(1024, 768), display_diameter=16, display_distance=24)
-# path = 'C:/Users/radzi/OneDrive/Desktop/II/Project/TestVideos/peat_small/13. Maroon 5 - Sugar (Official Music Video)_peat.avi'
-# result, breaches = w3c_guideline.analyse_file(path, speedup=3, show_live_analysis=False, show_live_chart=False)
-# print(result)
-# print(breaches)
-# result, breaches = w3c_guideline.analyse_file(path, speedup=3, show_live_analysis=False, show_live_chart=False)
-# result, breaches = w3c_guideline.analyse_live(speedup=10, show_live_analysis=True, show_live_chart=True)
-# print(result)
-# video_censor(path, breaches, fallback_frames=6, frames_before=30)
-# path = 'C:/Users/radzi/OneDrive/Desktop/II/Project/TestVideos/peat_small/13. Maroon 5 - Sugar (Official Music Video)_peat_censored.avi'
-# result, breaches = w3c_guideline.analyse_file(path, speedup=3, show_live_analysis=False, show_live_chart=False)
-# print(result)
-# print(breaches)
-#
-# path = 'C:/Users/radzi/OneDrive/Desktop/II/Project/MediaOut/video_censored.avi'
-# result, _ = w3c_guideline.analyse_file(path, display=display, speedup=3, show_live_analysis=False, show_live_chart=False)
-# print(result)
-
-# w3c_guideline.analyse_live(speedup=3, show_live_analysis=False, show_live_chart=False)
-
-import glob
-files = glob.glob("C:/Users/radzi/OneDrive/Desktop/II/Project/TestVideos/Resolutions/*")
-print(files)
-
-for file in files:
-    start = time.time()
-    result, breaches = w3c_guideline.analyse_file(file, speedup=3, show_live_analysis=False, show_live_chart=False)
-    print(time.time()-start)
+# EXECUTION
+result, breaches = w3c_guideline.analyse_file('path', display=display)
