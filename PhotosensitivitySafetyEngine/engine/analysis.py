@@ -187,7 +187,7 @@ class Register:
             axs[i].plot(np.arange(len(self.values[titles[i]])), self.values[titles[i]])
             axs[i].fill_between(np.arange(len(self.values[titles[i]])), 0, self.values[titles[i]], alpha=.3)
             axs[i].set_title(titles[i])
-        axs[-1].imshow(np.expand_dims(self.values[titles[-1]], axis=0), aspect=10, cmap='binary')
+        axs[-1].imshow(np.expand_dims(self.values[titles[-1]], axis=0), aspect=len(self.values[titles[-1]])//20, cmap='binary')
         axs[-1].set_yticks([]), axs[-1].set_title(titles[-1])
         fig.canvas.manager.set_window_title('Analysis Results')
         fig.tight_layout()

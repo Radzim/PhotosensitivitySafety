@@ -50,7 +50,3 @@ processing_pipeline = [
 
 # GUIDELINE OBJECT CREATION
 w3c_guideline = GuidelineProcess(function_objects, processing_pipeline)
-display = Display(display_resolution=(1024, 768), display_diameter=16, display_distance=24)
-
-# EXECUTION
-result, breaches = w3c_guideline.analyse_file('path', display=display)

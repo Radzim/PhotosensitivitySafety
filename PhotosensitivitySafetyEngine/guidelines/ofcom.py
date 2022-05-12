@@ -1,7 +1,6 @@
 from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.engine.analysis import GuidelineProcess, Display
 from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.libraries.function_objects import *
 from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.libraries import common_functions, custom_functions
-from PhotosensitivitySafetyEngine.PhotosensitivitySafetyEngine.video_tools.video_censor import *
 import numpy as np
 
 # FUNCTION OBJECTS
@@ -34,7 +33,7 @@ processing_pipeline = [
 
 # GUIDELINE OBJECT CREATION
 ofcom_guideline = GuidelineProcess(function_objects, processing_pipeline)
-display_properties = Display(display_resolution=(1024, 768), display_diameter=16, display_distance=24)
+# display_properties = Display(display_resolution=(1024, 768), display_diameter=16, display_distance=24)
 
 # EXECUTION
-ofcom_guideline.analyse_file('path', display_properties, speedup=5, show_live_analysis=False, show_live_chart=False)
+# ofcom_guideline.analyse_file('path', display_properties, speedup=5, show_live_analysis=False, show_live_chart=False)
